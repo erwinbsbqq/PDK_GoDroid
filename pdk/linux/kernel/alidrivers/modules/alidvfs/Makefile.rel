@@ -1,0 +1,5 @@
+# ARM SoC drivers
+obj-$(CONFIG_ARM_ALIS3921_CPUFREQ)  += s3921-cpufreq.o
+obj-$(CONFIG_REGULATOR_ETA1459) += eta1459-regulator.o
+obj-$(CONFIG_ETA1459_I2C)   += eta1459-i2c.o
+obj-$(CONFIG_ETA1459_CORE)  += eta1459-core.o

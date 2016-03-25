@@ -1,0 +1,17 @@
+1. add new get link device patch
+2. fix 7601 startup take 30s
+3. fix htc timing problem
+4. add CONFIG_ZHA_WPA_PATCH to make ralink wpa_support work properly for TPE. 
+5. disable HAS_ANTENNA_DIVERSITY_SUPPORT
+6. work around for EEPROM flag and GPIO problem
+7. add compile flag -O2 and modify Set_P2pCli_WscSsid_Proc as advised by Phill 
+8. add Nick patch. when p2p mac address table is full, a device fail to connect
+   with dongle, because can't find mac address in mac table and can't insert 
+   its mac to the table. solution: if can't find mac address in table and table
+   is full, will clean it, then insert it.
+9. add some WOW disable config. because, sometimes, wifi only has about 2mbps speed.
+10. change RXBULKAGGRE_SIZE from 12 to 7 in rtmp_usb.h 
+11. update mcu/bin/MT7601.bin to resolve usb interface problem
+12. in close function, do register clear action. unify sdk P4 change NO: 289609
+13. in close function, do register clear action. unify sdk P4 change NO: 220436 
+14. MT7601 module initialization conditional fail Patch 

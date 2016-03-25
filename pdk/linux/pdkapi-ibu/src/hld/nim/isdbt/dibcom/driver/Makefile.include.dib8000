@@ -1,0 +1,4 @@
+DIBCOM_DRIVER_OBJECTS += demod/dib8000/dib8000.o demod/dib8000/dib8000_monitor.o demod/dib8000/dib8000_gpio.o demod/dib8000/dib8000_tune.o demod/dib8000/dib8000_power.o demod/dib8000/dib8000_io.o
+
+HAVE_DIB8000 = 1
+

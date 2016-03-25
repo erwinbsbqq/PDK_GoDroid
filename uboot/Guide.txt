@@ -1,0 +1,91 @@
+Build Note:
+
+a. Cross tool setting:
+   On Shanghai Linux server 10.41.150.242,you need modify CROSS_COMPILE's setting as below in file <arch/mips/config.mk> 
+   CROSS_COMPILE=/opt/mips-4.4/bin/mips-linux-gnu-
+   
+   On Zhuhai B2 linux server 192.168.9.226, the CROSS_COMPILE's setting as below (default in perforce server)
+   CROSS_COMPILE=/opt/mipsel-4.4/bin/mipsel-linux-gnu-
+
+   If your cross tool is installed at a different location, you should modify the above setting relately.
+   
+
+b. Build script
+   i. build.sh       //will build u-boot.bin run in SDRAM
+   ii.build.sh rom   //will build u-boot.bin run from ROM(Flash)
+   iii. build clean/make distclean  //clean all files which generated in build.
+   iv. build backup  //will clean and build a tar.bz2 backup package (to the parent directory <..> of current directory).
+    (build.sh script will detect SDK release verison or full source version,then start to build, that is to say, build.sh work for both versions)
+
+c. Release script
+   release.sh        //will clean,make all and delete ALi own driver source code in <board/ali-stb> (keep libali-stb.ooo which is just renamed from libali-stb.o),then generate a file named ALi_u-boot201204_rYYYYMMDD_hhmm.tar.bz2 (in the parent directory <..> of current directory)
+   (Note: the parent directory of CWD(likely u-boot) should be writable so that the release package tar.bz2 file is saved there.)
+
+2012-08-17  first release.
+
+A. New added commands:
+
+  1. pmi info				//show Product Module Information.
+  2. part show			//show Nand partitions list which is stored in PMI.
+     part load			//Load a partition to a specified RAM address.
+     part update    //Erase and write the partition from the specified RAM address.
+  3. stbid show			//show Mac address,Serial number,OUI and HW version stored in the 'stbid' partition.
+     stbid set_mac	//set a new mac address. The new mac address must be valid, otherwize will refuse the modification.
+     stbid set_sn		//set the board serial number
+  4. boot_ali				//Load the kernel and see code to execute.
+
+B. Other often used commands.
+
+  1.tftpboot					//Load a code to SDRAM by tftp protocal,but don't start to execute. so name it 'tftp' may be better to understand.
+  2.go 								//Start to execute from the specified address.
+  3.bootm							//The command will check the (.UBO) header validation,then start to execute it after the header.
+                      //The command also can pass some arguments to kernel (Linux).
+  4.printenv					//print the current enviroment variable setting.
+  5.setenv						//set/modify the enviroment variable value.
+  6.ping							//check the network is connected or not. Maybe you should use 'eth up' command to turn on ethernet function.
+  7.nand bad					//show bad blocks in the Nand flash.
+  8.md								//display memory content in the specified address.
+  9.help							//list the supported commands,or print the usage of the specified command.
+
+C. How to change network parameters to fit the different work enviroment
+
+  1. change MAC address
+    After enter u-boot command line, use cmd 'stbid set_mac uu:vv:ww:xx:yy:zz',after update done, re-boot your board. You should enter a valid mac address,otherwize system refuse to change it.
+  2. change IP/Gateway/Netmask/ServerIP
+     You just need change the related enviroment variable setting,For example:
+     change IP: 
+      u-boot> setenv ipaddr 192.168.8.188
+     change Gateway: 
+      u-boot> setenv gatewayip 192.168.8.1
+     change Netmask: 
+      u-boot> setenv netmask 255.255.0.0      //but it is 255.255.255.0 in 99% case.
+     change ServerIP: 
+      u-boot> setenv serverip 192.168.20.5
+
+D. tftp function.
+
+   1. tftp load u-boot to SDRAM to run
+     u-boot> tftp a3000200 u-boot.bin
+     u-boot> go a3000200
+     
+   2. tftp load kernel & See to run
+      u-boot> tftp 840001C0 see_bin.ubo
+      u-boot> tftp 800FFFC0 main_bin.ubo
+      u-boot> bootm 800FFFC0
+      
+   3. tftp load a code to update a partition.
+      u-boot> tftp 80000000 main_bin.ubo
+      u-boot> part show
+      u-boot> part update 6 80000000 345678   //345678 is code(main_bin.ubo) length, hexadecimal
+
+E. USB function.
+
+   1. usb boot,please use the script like below, you can copy and paste it in u-boot command line:
+      u-boot> usb start;fatload usb 0 85000000 see_bin.ubo;cp.b 85000000 840001C0 400000;fatload usb 0 85000000 main_bin.ubo;cp.b 85000000 800FFFC0 400000;bootm 800FFFC0
+       (fatload to 840001C0/800FFFC0 will bring "EHCI timed out on TD - token=0x80008d80" error, it looks sdram address 4K alignment issue.)
+   
+   2. use usb to update a partition.
+      u-boot> usb start
+      u-boot> fatload usb 0 80000000 main_bin.ubo
+      u-boot> part show
+      u-boot> part update 6 80000000 345678   //345678 is code(main_bin.ubo) length, hexadecimal

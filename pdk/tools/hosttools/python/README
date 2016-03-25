@@ -1,0 +1,12 @@
+详细介绍请参考：ALI_SDK6.0/internal/sdk_doc/python tool/
+
+    -bytes.py		解析xml中type为string,uint,int,ushort,short,ubyte,byte的数据
+    -bytefp.py		写二进制文件的接口
+    -mac.py		解析xml中type为mac的数据
+    -scriptxml.py	加载xml文件，处理node节点
+    -cmdline.py		parser Ali_nand_desc.xml -> cmdline.cmd & cmdline_rcv.cmd
+    -bootargs.py	parser bootargs.xml -> bootargs.bin
+    -bootmedia.py	parser bootmedia.xml -> bootmedia.bin
+    -deviceinfo.py	parser deviceinfo.xml -> deviceinfo.bin
+    -ftoolini.py	parser Ali_nand_desc.xml -> ALI.ini
+    

@@ -1,0 +1,504 @@
+#
+# -= Makefile for project compile =-
+#
+# Usage:
+# . Name this file as "Makefile";
+#   Put it in the root of "src" directory.
+# . Add a new module name in SMOD;
+#   Write the linkage information at the end of file.
+#
+
+# List of sub-modules
+# Note: Can NOT be the same name as sub-directories.
+SMOD = OSAL_PTHREAD HLD_BASE \
+       HLD_BUS_DOG \
+       HLD_BUS_UART \
+       HLD_APE \
+       HLD_STO \
+       HLD_NIM \
+       HLD_CIC \
+       HLD_DSC HLD_RTC\
+       HLD_STANDBY\
+       HLD_DBG \
+       HLD_DMX \
+       HLD_DECV \
+       HLD_GE \
+       HLD_VP \
+       HLD_VBI \
+       HLD_DECA \
+       HLD_SND \
+       HLD_OSD \
+       HLD_SDEC \
+       HLD_PAN \
+       HLD_SOC \
+       HLD_SMC \
+       HLD_SCART \
+       HLD_IMGDEC \
+       HLD_BDMA \
+       HLD_NIM_ISDBT \
+       HLD_HDMI \
+       HLD_AVSYNC \
+       HLD_MISC_IPC \
+       HLD_MISC_RFK \
+       HLD_SURFACE_2D \
+       HLD_OTP \
+       HLD_FAKE	\
+       HLD_TRNG	\
+       HLD_WIFI \
+       HLD_CE \
+       LIB_ASH LIB_LOADER \
+       LIB_UPG LIB_USBUPG LIB_UPG4 \
+       LIB_PUB LIB_PUB_ALL LIB_PUB_AS_ENGINE  \
+       LIB_GNUZIP LIB_LIB7ZIP LIB_LZMA LIB_UN7ZIP LIB_UNLZO LIB_CHAR \
+       LIB_DBC \
+       LIB_SI_ENGINE LIB_SI_FILTER LIB_SI_PARSER LIB_SI_PLUGIN_MONITOR LIB_SI_PLUGIN_SEARCH LIB_SI_PLUGIN_TDT \
+       LIB_EPG \
+       LIB_NVOD \
+       LIB_CHUNK LIB_DB5 LIB_DB4 LIB_DB4_T LIB_DB4_ISDBT LIB_DB4_ATSC \
+       VERSION_INFO \
+       LIB_DVTCA LIB_CONAX7 LIB_DVNCA LIB_CDCA3 LIB_MGCA\
+       LIB_FS LIB_STBINFO LIB_STBINFO_NOR LIB_LOGICSTO \
+       LIB_FLIST \
+       LIB_PVR3_ENG LIB_PVR_DRIVE LIB_PVR3_MGR LIB_PVR3_API36 \
+       LIB_GE LIB_AUI LIB_SURFACE_2D \
+       LIB_AMP LIB_AMPGST LIB_IMAGE \
+       LIB_NETUPG \
+       CRYPTON \
+       LIB_AD \
+       HLD_ENCODER \
+       HLD_TRNG
+
+# Following lines are the common description for all projects.
+# Do NOT modify anything, unless you know what you are doing.
+
+# Note: Assume this file is executed under 'src' directory.
+include compiler.def
+include path.def
+
+ifneq ($(strip $(BUILD_APP_MODE_TEST)),)
+SMOD += TEST_CUINT
+endif
+
+SMOD_ = ${SMOD:=_}
+SMOD__ = ${SMOD:=__}
+
+do_nothing:
+	@echo "Do nothing."
+
+-include cstm.def
+
+all: ${SMOD}
+
+clean: ${SMOD_}
+	cd ${LIB_DIR}; \
+	  rm -f list.mod
+	  
+ddk_rel: ${SMOD__}
+	cd ${LIB_DIR}; \
+
+rebuild: clean all
+
+
+telelogic: telelogic.mk
+	echo generate $< done
+
+telelogic.mk: makefile
+	@gawk  -v src_root_path="${BASE_DIR}" -f ../prj/tools/telelogic.awk $<  >$@
+
+telelogic_all: telelogic.mk 
+	make -f telelogic.mk ${SMOD}
+
+# End of common description.
+
+# Construct and deconstruct of sub-modules
+ 
+OSAL_PTHREAD:
+	cd osal/pthread; \
+	  ${MAKE}
+OSAL_PTHREAD_:
+	cd osal/pthread; \
+	  ${MAKE} clean
+OSAL_PTHREAD__:
+	cd osal/pthread; \
+	  ${MAKE} ddk_rel
+
+HLD_BASE:
+	cd hld; \
+	  ${MAKE}
+HLD_BASE_:
+	cd hld; \
+	  ${MAKE} clean
+HLD_BASE__:
+	cd hld; \
+	  ${MAKE} ddk_rel
+
+HLD_BUS_UART:
+	cd bus/sci; \
+	  ${MAKE}
+HLD_BUS_UART_:
+	cd bus/sci; \
+	  ${MAKE} clean
+HLD_BUS_UART__:
+	cd bus/sci; \
+	  ${MAKE} ddk_rel
+
+HLD_BUS_DOG:
+	cd bus/dog; \
+	  ${MAKE}
+HLD_BUS_DOG_:
+	cd bus/dog; \
+	  ${MAKE} clean
+HLD_BUS_DOG__:
+	cd bus/dog; \
+	  ${MAKE} ddk_rel
+	  
+HLD_APE:
+	cd hld/ape; \
+		$(MAKE)
+HLD_APE_:
+	cd hld/ape; \
+		$(MAKE) clean
+HLD_APE__:
+	cd hld/ape; \
+		$(MAKE) ddk_rel
+
+HLD_RTC:
+	cd hld/rtc; \
+	  ${MAKE}
+HLD_RTC_:
+	cd hld/rtc; \
+	  ${MAKE} clean
+HLD_RTC__:
+	cd hld/rtc; \
+	  ${MAKE} ddk_rel
+	  
+HLD_STANDBY:
+	cd hld/standby; \
+	  ${MAKE}
+HLD_STANDBY_:
+	cd hld/standby; \
+	  ${MAKE} clean
+HLD_STANDBY__:
+	cd hld/standby; \
+	  ${MAKE} ddk_rel
+	  
+HLD_STO:
+	cd hld/sto; \
+	  ${MAKE}
+HLD_STO_:
+	cd hld/sto; \
+	  ${MAKE} clean
+HLD_STO__:
+	cd hld/sto; \
+	  ${MAKE} ddk_rel
+
+HLD_IMGDEC:
+	cd hld/imgdec; \
+	  ${MAKE}
+HLD_IMGDEC_:
+	cd hld/imgdec; \
+	  ${MAKE} clean
+HLD_IMGDEC__:
+	cd hld/imgdec; \
+	  ${MAKE} ddk_rel
+
+HLD_BDMA:
+	cd hld/bdma; \
+	  ${MAKE}
+HLD_BDMA_:
+	cd hld/bdma; \
+	  ${MAKE} clean
+HLD_BDMA__:
+	cd hld/bdma; \
+	  ${MAKE} ddk_rel	  
+
+HLD_NIM:
+	cd hld/nim; \
+	  ${MAKE}
+HLD_NIM_:
+	cd hld/nim; \
+	  ${MAKE} clean
+HLD_NIM__:
+	cd hld/nim; \
+	  ${MAKE} ddk_rel
+
+HLD_HDMI:
+	cd hld/hdmi; \
+	  ${MAKE}
+HLD_HDMI_:
+	cd hld/hdmi; \
+	  ${MAKE} clean
+HLD_HDMI__:
+	cd hld/hdmi; \
+	  ${MAKE} ddk_rel
+	  
+HLD_NIM_ISDBT:
+	cd hld/nim/isdbt; \
+	  ${MAKE}
+HLD_NIM_ISDBT_:
+	cd hld/nim/isdbt; \
+	  ${MAKE} clean
+HLD_NIM_ISDBT__:
+	cd hld/nim/isdbt; \
+	  ${MAKE} ddk_rel
+
+HLD_DMX:
+	cd hld/dmx; \
+	  ${MAKE}
+HLD_DMX_:
+	cd hld/dmx; \
+	  ${MAKE} clean
+HLD_DMX__:
+	cd hld/dmx; \
+	  ${MAKE} ddk_rel
+
+HLD_DBG:
+	cd hld/dbg; \
+	  ${MAKE}
+HLD_DBG_:
+	cd hld/dbg; \
+	  ${MAKE} clean
+HLD_DBG__:
+	cd hld/dbg; \
+	  ${MAKE} ddk_rel
+	  
+HLD_AVSYNC:
+	cd hld/avsync; \
+	  ${MAKE}
+HLD_AVSYNC_:
+	cd hld/avsync; \
+	  ${MAKE} clean
+HLD_AVSYNC__:
+	cd hld/avsync; \
+	  ${MAKE} ddk_rel
+
+HLD_DECV:
+	cd hld/decv; \
+	  ${MAKE}
+HLD_DECV_:
+	cd hld/decv; \
+	  ${MAKE} clean
+HLD_DECV__:
+	cd hld/decv; \
+	  ${MAKE} ddk_rel
+
+HLD_GE:
+	cd hld/ge; \
+	  ${MAKE}
+HLD_GE_:
+	cd hld/ge; \
+	  ${MAKE} clean
+HLD_GE__:
+	cd hld/ge; \
+	  ${MAKE} ddk_rel	  
+
+HLD_VP:
+	cd hld/dis; \
+	  ${MAKE}
+HLD_VP_:
+	cd hld/dis; \
+	  ${MAKE} clean
+HLD_VP__:
+	cd hld/dis; \
+	  ${MAKE} ddk_rel
+
+HLD_VBI:
+	cd hld/vbi; \
+	  ${MAKE}
+HLD_VBI_:
+	cd hld/vbi; \
+	  ${MAKE} clean
+HLD_VBI__:
+	cd hld/vbi; \
+	  ${MAKE} ddk_rel
+
+HLD_DECA:
+	cd hld/deca; \
+	  ${MAKE}
+HLD_DECA_:
+	cd hld/deca; \
+	  ${MAKE} clean
+HLD_DECA__:
+	cd hld/deca; \
+	  ${MAKE} ddk_rel
+
+HLD_SND:
+	cd hld/snd; \
+	  ${MAKE}
+HLD_SND_:
+	cd hld/snd; \
+	  ${MAKE} clean
+HLD_SND__:
+	cd hld/snd; \
+	  ${MAKE} ddk_rel
+
+HLD_OSD:
+	cd hld/osd; \
+	  ${MAKE}
+HLD_OSD_:
+	cd hld/osd; \
+	  ${MAKE} clean
+HLD_OSD__:
+	cd hld/osd; \
+	  ${MAKE} ddk_rel
+
+HLD_CIC:
+	cd hld/cic; \
+	  ${MAKE}
+HLD_CIC_:
+	cd hld/cic; \
+	  ${MAKE} clean
+HLD_CIC__:
+	cd hld/cic; \
+	  ${MAKE} ddk_rel
+	  
+HLD_SDEC:
+	cd hld/sdec; \
+	  ${MAKE}
+HLD_SDEC_:
+	cd hld/sdec; \
+	  ${MAKE} clean
+HLD_SDEC__:
+	cd hld/sdec; \
+	  ${MAKE} ddk_rel
+
+HLD_PAN:
+	cd hld/pan; \
+	  ${MAKE}
+HLD_PAN_:
+	cd hld/pan; \
+	  ${MAKE} clean
+HLD_PAN__:
+	cd hld/pan; \
+	  ${MAKE} ddk_rel
+
+HLD_SOC:
+	cd hld/soc; \
+	  ${MAKE}
+HLD_SOC_:
+	cd hld/soc; \
+	  ${MAKE} clean
+HLD_SOC__:
+	cd hld/soc; \
+	  ${MAKE} ddk_rel
+	  	  
+HLD_SCART:
+	cd hld/scart; \
+	  ${MAKE}
+HLD_SCART_:
+	cd hld/scart; \
+	  ${MAKE} clean
+HLD_SCART__:
+	cd hld/scart; \
+	  ${MAKE} ddk_rel
+
+HLD_SMC:
+	cd hld/smc; \
+	  ${MAKE}
+HLD_SMC_:
+	cd hld/smc; \
+	  ${MAKE} clean
+HLD_SMC__:
+	cd hld/smc; \
+	  ${MAKE} ddk_rel
+	  
+HLD_OTP:
+	cd bus/otp; \
+	  ${MAKE}
+HLD_OTP_:
+	cd bus/otp; \
+	  ${MAKE} clean
+HLD_OTP__:
+	cd bus/otp; \
+	  ${MAKE} ddk_rel
+	  
+HLD_FAKE:
+	cd hld/fake; \
+	  ${MAKE}
+HLD_FAKE_:
+	cd hld/fake; \
+	  ${MAKE} clean
+HLD_FAKE__:
+	cd hld/fake; \
+	  ${MAKE} ddk_rel
+
+HLD_TRNG:
+	cd hld/trng; \
+	  ${MAKE}
+HLD_TRNG_:
+	cd hld/trng; \
+	  ${MAKE} clean
+HLD_TRNG__:
+	cd hld/trng; \
+	  ${MAKE} ddk_rel
+	  
+HLD_CE:
+	cd hld/ce; \
+	  ${MAKE}
+HLD_CE_:
+	cd hld/ce; \
+	  ${MAKE} clean
+HLD_CE__:
+	cd hld/ce; \
+	  ${MAKE} ddk_rel
+
+HLD_DSC:
+	cd hld/dsc; \
+	  ${MAKE}
+HLD_DSC_:
+	cd hld/dsc; \
+	  ${MAKE} clean
+HLD_DSC__:
+	cd hld/dsc; \
+	  ${MAKE} ddk_rel
+
+HLD_WIFI:
+	cd hld/wifi; \
+	  ${MAKE}
+HLD_WIFI_:
+	cd hld/wifi; \
+	  ${MAKE} clean
+HLD_WIFI__:
+	cd hld/wifi; \
+	  ${MAKE} ddk_rel
+
+HLD_MISC_IPC:
+	cd misc/ipc;\
+	 ${MAKE}
+HLD_MISC_IPC_:
+	cd misc/ipc;\
+	 ${MAKE} clean	
+HLD_MISC_IPC__:
+	cd misc/ipc;\
+	 ${MAKE} ddk_rel
+	  
+HLD_MISC_RFK:
+	cd misc/rfk;\
+	 ${MAKE}
+HLD_MISC_RFK_:
+	cd misc/rfk;\
+	 ${MAKE} clean	
+HLD_MISC_RFK__:
+	cd misc/rfk;\
+	 ${MAKE} ddk_rel
+
+HLD_SURFACE_2D:
+	cd hld/surface2d; \
+	  ${MAKE}
+HLD_SURFACE_2D_:
+	cd hld/surface2d; \
+	  ${MAKE} clean
+HLD_SURFACE_2D__:
+	cd hld/surface2d; \
+	  ${MAKE} ddk_rel
+
+HLD_ENCODER:
+	cd hld/encoder; \
+	  ${MAKE}
+HLD_ENCODER_:
+	cd hld/encoder; \
+	  ${MAKE} clean
+HLD_ENCODER__:
+	cd hld/encoder; \
+	  ${MAKE} ddk_rel
+

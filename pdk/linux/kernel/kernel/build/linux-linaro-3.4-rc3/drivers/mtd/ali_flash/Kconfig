@@ -1,0 +1,20 @@
+# drivers/mtd/ali_flash/Kconfig
+
+menu "Ali flash controller and flash chip drivers"
+	depends on MTD!=n
+
+config ALI_SFLASH
+	tristate "Ali serial flash controller and flash chip driver."
+	depends on SPI_MASTER
+	help
+	  This provides a MTD device driver for the Ali serial flash controller
+	  and most common serial flash chips' driver.
+
+config ALI_PFLASH
+	tristate "Ali parallel flash controller and flash chip driver."
+	help
+	  This provides a MTD device driver for the Ali parallel flash controller
+	  and most common serial flash chips' driver.
+
+endmenu
+

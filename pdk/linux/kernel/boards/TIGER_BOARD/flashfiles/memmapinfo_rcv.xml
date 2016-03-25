@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+type: string,mac,file,uint,int,ushort,short,ubyte,byte
+
+typedef struct
+{
+	unsigned int kernel_start;
+	unsigned int kernel_len;
+
+	unsigned int boot_see_start;
+	unsigned int boot_see_len;
+	
+	unsigned int see_start;
+	unsigned int see_len;
+
+	unsigned int ae_start;
+	unsigned int ae_len;
+
+	unsigned int mcapi_start;
+	unsigned int mcapi_len;
+
+	unsigned int vbv_start;
+	unsigned int vbv_len;
+
+	unsigned int decv_fb_start;
+	unsigned int decv_fb_len;
+
+	unsigned int decv_raw_start;
+	unsigned int decv_raw_len;
+
+	unsigned int osd_fb_start;
+	unsigned int osd_fb_len;
+
+	unsigned int boot_media_start;
+	unsigned int boot_media_len;
+	
+	unsigned int reserve[780];
+}ADF_BOOT_MEMMAPINFO; // maximun is 800X4 bytes
+
+-->
+<memmapinfo>
+	<kernel_start type="uint">0x1111</kernel_start>
+	<kernel_len type="uint">0x1112</kernel_len>
+
+	<boot_see_start type="uint">0x1121</boot_see_start>
+	<boot_see_len type="uint">0x1122</boot_see_len>
+	
+	<see_start type="uint">0x1131</see_start>
+	<see_len type="uint">0x1132</see_len>
+	
+	<ae_start type="uint">0x1141</ae_start>
+	<ae_len type="uint">0x1142</ae_len>
+
+	<mcapi_start type="uint">0x1151</mcapi_start>
+	<mcapi_len type="uint">0x1152</mcapi_len>
+
+	<vbv_start type="uint">0x1161</vbv_start>
+	<vbv_len type="uint">0x1162</vbv_len>
+
+	<decv_fb_start type="uint">0x1171</decv_fb_start>
+	<decv_fb_len type="uint">0x1172</decv_fb_len>
+
+	<decv_raw_start type="uint">0x1181</decv_raw_start>
+	<decv_raw_len type="uint">0x1182</decv_raw_len>
+
+	<osd_fb_start type="uint">0x1191</osd_fb_start>
+	<osd_fb_len type="uint">0x1192</osd_fb_len>
+
+	<boot_media_start type="uint">0x11a1</boot_media_start>
+	<boot_media_len type="uint">0x11a2</boot_media_len>
+								
+	<rsv type="uint" size="780"></rsv>
+</memmapinfo>
+

@@ -1,0 +1,134 @@
+/*
+ * Copyright (C) 2013 Broadcom Corporation
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation version 2.
+ *
+ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
+ * kind, whether express or implied; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/*comment, 
+About irq
+#define GIC_SPI 0
+#define GIC_SPI 0
+#define GIC_PPI 1
+#define IRQ_TYPE_NONE		0
+#define IRQ_TYPE_EDGE_RISING	1
+#define IRQ_TYPE_EDGE_FALLING	2
+#define IRQ_TYPE_EDGE_BOTH	(IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING)
+#define IRQ_TYPE_LEVEL_HIGH	4
+#define IRQ_TYPE_LEVEL_LOW	8
+
+for example
+interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
+comment*/
+
+/dts-v1/;
+
+/ {
+	model = "ali_3921b demo board";
+	compatible = "ali,3921b", "ali,3921a";
+	#address-cells = <1>;
+	#size-cells = <1>;
+  	interrupt-parent=<&gic>;
+  
+  	chosen {
+   		name = "chosen";
+    		bootargs = "null"; 
+    		linux,stdout-path = "null"; 
+  	};
+  
+  	memory {
+    		device_type = "memory"; 
+   		reg = <0x80000000 0xC0000000>;
+  	}; 
+  
+  	gic:interrupt-controller@0x1BF01000{
+		compatible="arm,cortex-a9-gic";
+		reg=<0x1BF01000 0x1000 0x1BF00100 0x100>;
+		interrupt-controller;
+		#interrupt-cells=<3>;
+		status = "okay";
+	};
+
+
+	uart@18018300 {
+			compatible = "ns16550a";
+			reg = <0x18018300 0x0C>;
+			interrupts = <0 16 4>;
+			clock-frequency	= <1843200>;
+		  	current-speed = <115200>;
+		  	reg-offset = <0>;
+		 	reg-shift = <0>;
+		 	fifo-size = <16>;
+		 	reg-io-width = <1>;
+	};
+
+	uart@18018600 {
+			compatible = "ns16550a";
+			reg = <0x18018600 0x0C>;
+			interrupts = <0 17 4>;
+			clock-frequency	= <1843200>;
+			current-speed = <115200>;
+			reg-offset = <0>;
+			reg-shift = <0>;
+			fifo-size = <16>;
+			reg-io-width = <1>;
+	};
+	
+	spi@0x18016000{  
+     		compatible = "alitech,spictrl"; 
+     		reg = <0x18016000 0x1000>;
+     		#address-cells = <1>;
+     		#size-cells = <1>;
+     		interrupts = <0 10 4>;
+     		status = "okay"; 
+
+     };
+	i2c0: i2c@18018200 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "alitech,i2c";
+		reg = <0x18018200 0x20>;
+		interrupts = <0 18 4>;
+		clock-frequency = <200000>;
+		
+	};
+	
+	
+	i2c1: i2c@18018700 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "alitech,i2c";
+		reg = <0x18018700 0x20>;
+		interrupts = <0 25 4>;
+		clock-frequency = <200000>;
+
+		mpu6050@68{
+			#address-cells = <1>;
+			#size-cells = <0>;
+			#gpio-cells =<0>;
+			compatible = "invn,mpu6050";
+			reg=<0x68 8>;
+			invn,place="Portrait Down Back Side";
+			invn,gpio-en=<0>;
+			status = "okay";
+		};
+	};
+	i2c2: i2c@18018b00 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "alitech,i2c";
+		reg = <0x18018b00 0x20>;
+		interrupts = <0 26 4>;
+		clock-frequency = <200000>;
+
+		
+	};
+	
+	
+};

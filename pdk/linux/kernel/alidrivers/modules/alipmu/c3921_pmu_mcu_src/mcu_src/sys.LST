@@ -1,0 +1,495 @@
+C51 COMPILER V7.06   SYS                                                                   10/27/2014 10:37:58 PAGE 1   
+
+
+C51 COMPILER V7.06, COMPILATION OF MODULE SYS
+OBJECT MODULE PLACED IN sys.OBJ
+COMPILER INVOKED BY: D:\SW_Install\C51\BIN\C51.EXE sys.c LARGE BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          #include "sys.h"
+*** WARNING C322 IN LINE 90 OF sys.h: unknown identifier
+   2          #include <dp8051xp.h>
+   3          #include <stdio.h>
+   4          #include "ir.h"
+   5          #include "pannel.h"
+   6          #include "uart.h"
+   7          #include "pmu_rtc.h"
+   8          #include <intrins.h>
+   9          
+  10          //============================================================//
+  11          static UINT8 g_power_key = 0;
+  12          void power_key_mode(enum KEY_MODE mode);
+  13          void exit_standby_status(unsigned char status0,unsigned char status1,unsigned char status2);
+  14          volatile unsigned long   g_ir_power_key[8] _at_ 0x3fd0;
+  15          extern void IR_Init(void);
+  16          extern void IR_ISR(void);
+  17          //main cpu enter standby
+  18          UINT8  g_standby_flag = NORMAL;
+  19          
+  20          // exit standby flag ,key,ir or time
+  21          UINT8  g_exit_standby_sts=0;
+  22          
+  23          //============================================================//
+  24          static void hal_gpio_write(UINT8 val)
+  25          {
+  26   1              *((volatile UINT8 xdata*)(HAL_GPIO_DO_REG)) = val;
+  27   1      }
+  28          
+  29          static UINT8 hal_gpio_read(void)
+  30          {
+  31   1              UINT8 ret = 0;
+  32   1      
+  33   1              ret =*((volatile UINT8 xdata*)(HAL_GPIO_DI_REG));
+  34   1              return ret;
+  35   1      }
+  36          
+  37          static UINT8 hal_gpio_dir_get(void)
+  38          {
+  39   1              UINT8 ret = 0;
+  40   1              ret =*((volatile UINT8 xdata*)(HAL_GPIO_DIR_REG));
+  41   1              return ret;
+  42   1      }
+  43          
+  44          static void hal_gpio_dir_set(UINT8 val)
+  45          {
+  46   1              *((volatile UINT8 xdata*)(HAL_GPIO_DIR_REG)) = val;
+  47   1      }
+  48          
+  49          static void hal_gpio_en(UINT8 val)
+  50          {
+  51   1              *((volatile UINT8 xdata*)(HAL_GPIO_EN)) = val;
+  52   1      }
+  53              
+  54          static void hal_gpio1_write(UINT8 val)
+C51 COMPILER V7.06   SYS                                                                   10/27/2014 10:37:58 PAGE 2   
+
+  55          {
+  56   1              *((volatile UINT8 xdata*)(HAL_GPIO1_DO_REG)) = val;
+  57   1      }
+  58          
+  59          static UINT8 hal_gpio1_read(void)
+  60          {
+  61   1              UINT8 ret = 0;
+  62   1      
+  63   1              ret =*((volatile UINT8 xdata*)(HAL_GPIO1_DI_REG));
+  64   1              return ret;
+  65   1      }
+  66          
+  67          static UINT8 hal_gpio1_dir_get(void)
+  68          {
+  69   1              UINT8 ret = 0;
+  70   1      
+  71   1              ret =*((volatile UINT8 xdata*)(HAL_GPIO1_DIR_REG));
+  72   1              return ret;
+  73   1      }
+  74          
+  75          static void hal_gpio1_dir_set(UINT8 val)
+  76          {
+  77   1              *((volatile UINT8 xdata*)(HAL_GPIO1_DIR_REG)) = val;
+  78   1      }
+  79          
+  80          static void hal_gpio1_en(UINT8 val)
+  81          {
+  82   1              *((volatile UINT8 xdata*)(HAL_GPIO1_EN)) = val;
+  83   1      }
+  84          
+  85          void hal_mcu_gpio_en(UINT8 pos)
+  86          {
+*** WARNING C235 IN LINE 86 OF SYS.C: parameter 1: different types
+  87   1              if(pos<8)
+  88   1              {
+  89   2                      hal_gpio_en((*((volatile UINT8 xdata*)(HAL_GPIO_EN)))|(1<<pos));
+  90   2              }
+  91   1              else
+  92   1              {
+  93   2                      hal_gpio1_en((*((volatile UINT8 xdata*)(HAL_GPIO1_EN)))|(1<<(pos-8)));
+  94   2              }
+  95   1      }
+  96          
+  97          void hal_mcu_gpio_disable_en(void)
+  98          {               
+  99   1      #ifdef PMU_MCU_M3503
+                      {
+                              hal_gpio_en(0);
+                      }
+              #else
+ 104   1              {
+ 105   2                      hal_gpio_en(0);
+ 106   2                      hal_gpio1_en(0);
+ 107   2              }
+ 108   1      #endif                       
+ 109   1       }
+ 110          
+ 111          UINT8 hal_gpio_bit_get(UINT8 pos)
+ 112          {
+*** WARNING C235 IN LINE 112 OF SYS.C: parameter 1: different types
+ 113   1              UINT8 ret = 0; 
+ 114   1              if(pos<8)
+C51 COMPILER V7.06   SYS                                                                   10/27/2014 10:37:58 PAGE 3   
+
+ 115   1              {
+ 116   2                      ret = (( hal_gpio_read() >> pos) & 1);
+ 117   2              }
+ 118   1              else
+ 119   1              {
+ 120   2                      ret = ((hal_gpio1_read() >> (pos-8)) & 1);
+ 121   2              }
+ 122   1              
+ 123   1              return ret;    
+ 124   1      }
+ 125          
+ 126          void hal_gpio_bit_set(UINT8 pos, UINT8 val)
+ 127          {
+*** WARNING C235 IN LINE 127 OF SYS.C: parameter 1: different types
+*** WARNING C235 IN LINE 127 OF SYS.C: parameter 2: different types
+ 128   1              if(pos < 8)
+ 129   1              {
+ 130   2                      hal_gpio_write((( (*(volatile UINT8 xdata*)(HAL_GPIO_DO_REG)) &~(1 << pos)  ) | (val << pos)));
+ 131   2              }
+ 132   1              else
+ 133   1              {
+ 134   2                      hal_gpio1_write( ( (*(volatile UINT8 xdata*)(HAL_GPIO1_DO_REG)) & (~(1 << (pos-8)))) | (val << (pos-8)))
+             -;
+ 135   2              }
+ 136   1      }
+ 137          
+ 138          void hal_gpio_bit_dir_set(UINT8 pos, UINT8 val)
+ 139          {
+*** WARNING C235 IN LINE 139 OF SYS.C: parameter 1: different types
+*** WARNING C235 IN LINE 139 OF SYS.C: parameter 2: different types
+ 140   1              if(pos<8)
+ 141   1              {
+ 142   2                      hal_gpio_dir_set((hal_gpio_dir_get() & (~(1 << pos))) | (val << pos));
+ 143   2              }
+ 144   1              else
+ 145   1              {
+ 146   2                      hal_gpio1_dir_set((hal_gpio1_dir_get() & (~(1 << (pos-8)))) | (val << (pos-8)));
+ 147   2              }
+ 148   1      }
+ 149          
+ 150          void debug_delay(UINT32 n)
+ 151          {
+ 152   1              UINT32 i = 600;
+ 153   1              for(i=0;i<n;i--)
+ 154   1              {
+ 155   2                      while(i--);
+ 156   2              }
+ 157   1      }
+ 158          
+ 159          void mcu_disable_int(void)
+ 160          {
+ 161   1              PMU_WRITE_BYTE(0xc022,0);
+ 162   1      }
+ 163          
+ 164          void pmu_init(void)
+ 165          {         
+ 166   1              InitUart(); 
+ 167   1              init_externint2();/*extern int2 */
+ 168   1              init_externint3();
+ 169   1              init_externint4();
+ 170   1              init_externint5();     
+ 171   1              //PMU_WRITE_BYTE(PMU_TM0_CTRL, 0x0);
+C51 COMPILER V7.06   SYS                                                                   10/27/2014 10:37:58 PAGE 4   
+
+ 172   1              PMU_WRITE_BYTE(PMU_RTC1_CTRL,0x0);
+ 173   1              //PMU_WRITE_BYTE(PMU_TM2_CTRL, 0x0 );
+ 174   1              WRITE_BYTE(SYS_REG_IER,  READ_BYTE(SYS_REG_IER)&0xfe);//dis sys ir interrupt
+ 175   1              WRITE_BYTE(IR_REG_IER, 0x00);//disable ir ip interrupt 
+ 176   1              power_key_mode(NORMAL);
+ 177   1       }
+ 178          
+ 179          void standby_init(void)
+ 180          {
+ 181   1              PMU_WRITE_BYTE(SYS_REG_ISR, PMU_READ_BYTE(SYS_REG_ISR));// clear interrupt
+ 182   1              IR_Init();
+ 183   1              pannel_init();
+ 184   1              power_key_mode(STABDY);
+ 185   1              pmu_timer1_set_time(1);
+ 186   1      }
+ 187          
+ 188          void pannel_process(pRTC_TIMER rtc, enum SHOW_TYPE type)
+ 189          {
+ 190   1              INT8 ret = 0;
+ 191   1      
+ 192   1              show_pannel(type,rtc);
+ 193   1              if((ret=pannel_scan()) == SUCCESS)
+ 194   1              {
+ 195   2                      g_exit_standby_sts = 0x1; // means panenl key exit standby
+ 196   2                      PMU_WRITE_BYTE(EXIT_STANDBY_TYPE, g_exit_standby_sts);
+ 197   2                      main_cpu_get_time(rtc);
+ 198   2                      mcu_disable_int();
+ 199   2                      hal_mcu_gpio_disable_en();
+ 200   2                      PMU_WRITE_BYTE(PRS_KEY_STANDBY_LED, GREEN_LED);//enter norm mode,light  green Led
+ 201   2              #ifdef PMU_MCU_DEBUG
+                              //printf("pannel exit standby\n");
+                      #endif
+ 204   2                      while(1);//exit standby ,then hold mcu
+ 205   2              }
+ 206   1      }
+ 207          
+ 208          void ir_process(pRTC_TIMER rtc)
+ 209          {
+ 210   1              INT8 ret = 0;
+ 211   1      
+ 212   1              if((ret = get_ir()) == SUCCESS)
+ 213   1              {
+ 214   2                      g_exit_standby_sts=0x2; // means ir exit standby
+ 215   2                      PMU_WRITE_BYTE(EXIT_STANDBY_TYPE, g_exit_standby_sts);
+ 216   2                      exit_standby_status(0x50,0x4d,0x55);
+ 217   2                      main_cpu_get_time(rtc);
+ 218   2                      mcu_disable_int();
+ 219   2                      // HAL_MCU_GPIO_DISABLE_EN(); 
+ 220   2                      hal_mcu_gpio_disable_en();
+ 221   2                      PMU_WRITE_BYTE(PRS_KEY_STANDBY_LED,GREEN_LED);//enter norm mode,light  green Led
+ 222   2              #ifdef PMU_MCU_DEBUG
+                              //printf("ir exit standby\n");
+                      #endif
+ 225   2                      while(1); //exit standby ,then hold mcu
+ 226   2              } 
+ 227   1      }
+ 228          
+ 229          void rtc_process(pRTC_TIMER rtc,pRTC_TIMER wakeup_rtc)
+ 230          {
+ 231   1              // now ir can exit standby  
+ 232   1              if(rtc->day==wakeup_rtc->day&&rtc->hour==wakeup_rtc->hour&&\
+ 233   1              rtc->min==wakeup_rtc->min&&rtc->month==wakeup_rtc->month)
+C51 COMPILER V7.06   SYS                                                                   10/27/2014 10:37:58 PAGE 5   
+
+ 234   1              { 
+ 235   2                      if((rtc->day>0&&rtc->day<32)&&(rtc->month>0&&rtc->month<13))
+ 236   2                      {
+ 237   3                              g_exit_standby_sts=0x3; // means rtc exit standby
+ 238   3                              PMU_WRITE_BYTE(EXIT_STANDBY_TYPE, g_exit_standby_sts);
+ 239   3                              mcu_disable_int();
+ 240   3                              exit_standby_status(0x50,0x4d,0x55);
+ 241   3                              main_cpu_get_time(rtc);        
+ 242   3                              //HAL_MCU_GPIO_DISABLE_EN(); 
+ 243   3                              hal_mcu_gpio_disable_en();
+ 244   3                              PMU_WRITE_BYTE(PRS_KEY_STANDBY_LED,GREEN_LED);//enter norm mode,light  green Led
+ 245   3                      #ifdef PMU_MCU_DEBUG
+                                      printf("rtc exit standby\n");
+                              #endif
+ 248   3                              while(1);  //exit standby ,then hold mcu
+ 249   3                      }
+ 250   2              }       
+ 251   1      }
+ 252          
+ 253          void ali_power_key_process(pRTC_TIMER rtc)
+ 254          {
+ 255   1              if(g_power_key== 1)
+ 256   1              {
+ 257   2                      PMU_WRITE_BYTE(PRS_KEY_CFG+2,(PMU_READ_BYTE(PRS_KEY_CFG+2)|((1<<5)))); //clear interrupt
+ 258   2                      main_cpu_get_time(rtc);
+ 259   2                      mcu_disable_int();
+ 260   2                      //HAL_MCU_GPIO_DISABLE_EN();
+ 261   2                      hal_mcu_gpio_disable_en();
+ 262   2                      exit_standby_status(0x50,0x4d,0x55);
+ 263   2                      PMU_WRITE_BYTE(PRS_KEY_STANDBY_LED,GREEN_LED);//enter norm mode,light  green 
+ 264   2                      while(1); //exit standby ,then hold mcu
+ 265   2              }
+ 266   1      }
+ 267          
+ 268          void power_key_cfg()
+ 269          {
+ 270   1              UINT8 reg = 0;
+ 271   1      
+ 272   1              /*about 0.2s==>>>0x3e80 (UINT8)(4000*4/256)*/
+ 273   1              PMU_WRITE_BYTE(PRS_KEY_CFG, 0x80);/*about 0.1s==>>>0x1f40 (UINT8)(4000*2/256)*/
+ 274   1              PMU_WRITE_BYTE(PRS_KEY_CFG+1,0x3e);
+ 275   1              PMU_WRITE_BYTE(PRS_KEY_CFG+2,0x00);
+ 276   1              PMU_WRITE_BYTE(PRS_KEY_CFG+3,PMU_READ_BYTE(PRS_KEY_CFG+3)&0xf0);
+ 277   1      
+ 278   1              /*
+ 279   1              *  KEY_DISABLE_VAL=n us*1.5/(4*(5+1))
+ 280   1              */
+ 281   1              PMU_WRITE_BYTE(KEY_DISABLE_VAL_LOW0,0x6a);
+ 282   1              PMU_WRITE_BYTE(KEY_DISABLE_VAL_LOW1,0x18); //0.5 second 
+ 283   1              PMU_WRITE_BYTE(KEY_DISABLE_VAL_LOW2,0x00);
+ 284   1              PMU_WRITE_BYTE(KEY_DISABLE_EN,0x80);
+ 285   1      
+ 286   1              reg = PMU_READ_BYTE(MCU_SYS_IPR);//MCU_Polar
+ 287   1              // reg|=(1<<3)|(1<<6);  /*KEY_INT_STANDBY and KEY_INT_NORM*/
+ 288   1              reg|=(1<<3);
+ 289   1              PMU_WRITE_BYTE(MCU_SYS_IPR, reg);
+ 290   1              reg = PMU_READ_BYTE(MCU_SYS_IER); //MCU_INT_EN
+ 291   1              //reg|=(1<<3)|(1<<6);  /*KEY_INT_STANDBY and KEY_INT_NORM */
+ 292   1              reg|=(1<<3);
+ 293   1              PMU_WRITE_BYTE(MCU_SYS_IER, reg);
+ 294   1      
+ 295   1              IT0=1;
+C51 COMPILER V7.06   SYS                                                                   10/27/2014 10:37:58 PAGE 6   
+
+ 296   1              EX0=1;
+ 297   1              *(volatile UINT8 xdata *)( PRS_KEY_CFG+3) |=(0x1<<7);
+ 298   1              EA = 1;
+ 299   1      }
+ 300          
+ 301          void power_key_mode(enum KEY_MODE mode)
+ 302          {
+ 303   1              if(mode == STABDY)
+ 304   1              {
+ 305   2                      PMU_WRITE_BYTE(PMU_CFG, PMU_READ_BYTE(PMU_CFG) | 1<<7) ;// standby modde
+ 306   2              }
+ 307   1              else
+ 308   1              {
+ 309   2                      PMU_WRITE_BYTE(PMU_CFG, PMU_READ_BYTE(PMU_CFG)&(~(1<<7))) ;// normal mode
+ 310   2              }
+ 311   1      
+ 312   1              power_key_cfg();
+ 313   1      }
+ 314          
+ 315          /*
+ 316          *(1) PMU->MAIN CPU,exit standby ,get status
+ 317          */
+ 318          void exit_standby_status(unsigned char status0,unsigned char status1,unsigned char status2)
+ 319          {
+ 320   1              PMU_WRITE_BYTE(MAILBOX_GET_EXIT_STANDBY_STATUS0,status0);       
+ 321   1              PMU_WRITE_BYTE(MAILBOX_GET_EXIT_STANDBY_STATUS1,status1);
+ 322   1              PMU_WRITE_BYTE(MAILBOX_GET_EXIT_STANDBY_STATUS2,status2);
+ 323   1      }
+ 324          
+ 325          /*
+ 326          interrupt process
+ 327          1: time 0 interrupt
+ 328          2: ir interrupt
+ 329          */
+ 330          void extern_int0() interrupt 0   
+ 331          {
+ 332   1              UINT8 reg = 0;
+ 333   1              EA=0;
+ 334   1              reg = PMU_READ_BYTE(SYS_REG_ISR);
+ 335   1          
+ 336   1              if(reg&(1<<7)) // time0 3503 do not use it
+ 337   1              {
+ 338   2                      PMU_WRITE_BYTE(PMU_TM0_CTRL,PMU_READ_BYTE(PMU_TM0_CTRL)|(1<<3)); //write 1 to clear interrupt
+ 339   2              }
+ 340   1                        
+ 341   1              if(reg&(1<<IR_BIT)) // ir  interrupt
+ 342   1              {
+ 343   2                      IR_ISR();
+ 344   2              }
+ 345   1               
+ 346   1              if(reg&(1<<3))
+ 347   1              {        
+ 348   2                      if( PMU_READ_BYTE(PRS_KEY_CFG+2)&(1<<5))
+ 349   2                      {
+ 350   3                              g_power_key =1;
+ 351   3                      }
+ 352   2              }
+ 353   1      
+ 354   1              EA=1;
+ 355   1      }
+ 356          
+ 357          /*
+C51 COMPILER V7.06   SYS                                                                   10/27/2014 10:37:58 PAGE 7   
+
+ 358          mailbox interrupt
+ 359          * MAIN CPU => PMU MCU
+ 360          *(1)    set ir wakeup power key
+ 361          *(2)    set timer wake up time 
+ 362          *(3)    set current time
+ 363          */
+ 364          void extern_int2() interrupt   7             
+ 365          {
+ 366   1              EA=0;
+ 367   1              PMU_WRITE_BYTE(0xc220,0xf);     /*CPU TO MCU int clear*/
+ 368   1       
+ 369   1              /*get wakeup power key*/
+ 370   1              g_set_ir_key.ir_key_low3   =   PMU_READ_BYTE(MAILBOX_SET_POWERLOW3); 
+ 371   1              g_set_ir_key.ir_key_low2   =   PMU_READ_BYTE(MAILBOX_SET_POWERLOW2);
+ 372   1              g_set_ir_key.ir_key_low1   =   PMU_READ_BYTE(MAILBOX_SET_POWERLOW1);
+ 373   1              g_set_ir_key.ir_key_low0   =   PMU_READ_BYTE(MAILBOX_SET_POWERLOW0);
+ 374   1        
+ 375   1              /*get wakeup time*/
+ 376   1              g_wake_rtc.day  = PMU_READ_BYTE(MAILBOX_WAKE_DAY);
+ 377   1              g_wake_rtc.hour = PMU_READ_BYTE(MAILBOX_WAKE_HOUR);
+ 378   1              g_wake_rtc.min  = PMU_READ_BYTE(MAILBOX_WAKE_MIN);
+ 379   1              g_wake_rtc.month = PMU_READ_BYTE(MAILBOX_WAKE_MONTH);
+ 380   1              
+ 381   1              /*get current time*/
+ 382   1              g_rtc.year_h =  PMU_READ_BYTE(MAILBOX_SET_YEAR_H);
+ 383   1              g_rtc.year_l =  PMU_READ_BYTE(MAILBOX_SET_YEAR_L);
+ 384   1              g_rtc.month  =  PMU_READ_BYTE(MAILBOX_SET_MONTH);
+ 385   1              g_rtc.day    =  PMU_READ_BYTE(MAILBOX_SET_DAY );
+ 386   1              g_rtc.hour   =  PMU_READ_BYTE(MAILBOX_SET_HOUR);
+ 387   1              g_rtc.min    =  PMU_READ_BYTE(MAILBOX_SET_MIN );
+ 388   1              g_rtc.sec    =  PMU_READ_BYTE(MAILBOX_SET_SEC);
+ 389   1              g_rtc.year   = (g_rtc.year_h*100)+g_rtc.year_l;
+ 390   1      
+ 391   1      #ifndef PMU_MCU_DEBUG
+ 392   1              do{
+ 393   2                      // enter real standby mode
+ 394   2                      PMU_WRITE_BYTE(0xc101, PMU_READ_BYTE(0xc101) | 0x1);
+ 395   2                      PMU_WRITE_BYTE(0xc101, PMU_READ_BYTE(0xc101) | 0x1);
+ 396   2              }while(RED_LED != PMU_READ_BYTE(PRS_KEY_STANDBY_LED));
+ 397   1      #else 
+                      printf("enter stdby\n");
+              #endif
+ 400   1          
+ 401   1              g_standby_flag = ENTER_STANDBY;  
+ 402   1      
+ 403   1              EA=1;
+ 404   1      }
+ 405          
+ 406          void extern_int3() interrupt   8
+ 407          {
+ 408   1              EA=0;
+ 409   1              PMU_WRITE_BYTE(0xc220,0xf);     /*CPU TO MCU int clear*/
+ 410   1              EA=1;
+ 411   1      }
+ 412          
+ 413          void extern_int4() interrupt   9
+ 414          {
+ 415   1              EA=0;
+ 416   1              PMU_WRITE_BYTE(0xc220,0xf);     /*CPU TO MCU int clear*/
+ 417   1              EA=1;
+ 418   1      }
+ 419          
+C51 COMPILER V7.06   SYS                                                                   10/27/2014 10:37:58 PAGE 8   
+
+ 420          void extern_int5() interrupt   10
+ 421          {
+ 422   1              EA=0;
+ 423   1              EIF=0;
+ 424   1              PMU_WRITE_BYTE(0xc220,0xf);     /*CPU TO MCU int clear*/
+ 425   1              EA=1;
+ 426   1      }
+ 427          
+ 428          void init_externint2(void)
+ 429          {
+ 430   1              EX2 = 1;
+ 431   1              EA = 1;
+ 432   1      }
+ 433          
+ 434          void init_externint3(void)
+ 435          {
+ 436   1              EX3 = 1;
+ 437   1              EA = 1;
+ 438   1      }
+ 439          
+ 440          void init_externint4(void)
+ 441          {
+ 442   1              EX4 = 1;
+ 443   1              EA = 1;
+ 444   1      }
+ 445          
+ 446          void init_externint5(void)
+ 447          {
+ 448   1              EX5 = 1;
+ 449   1              EA = 1;
+ 450   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1415    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      3      21
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  7 WARNING(S),  0 ERROR(S)

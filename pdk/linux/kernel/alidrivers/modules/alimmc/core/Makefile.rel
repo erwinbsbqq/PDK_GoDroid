@@ -1,0 +1,5 @@
+#
+# Makefile for the kernel mmc core.
+#
+
+obj-$(CONFIG_ALI_MMC) += alimmc_core.o

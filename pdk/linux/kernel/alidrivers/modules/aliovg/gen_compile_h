@@ -1,0 +1,7 @@
+#!/bin/sh
+( echo /\* This file is auto generated. \*/ 
+  echo \#define MOD_COMPILE_TIME \"`date +%D@%T`\"
+  echo \#define MOD_COMPILE_BY \"$UID\"
+  echo \#define MOD_COMPILE_HOST \"`hostname`\"
+  echo \#define MOD_COMMIT \"`git log -1 --format=format:%H`\"
+) > compile.h

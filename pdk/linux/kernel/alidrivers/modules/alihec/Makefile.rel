@@ -1,0 +1,5 @@
+#
+#Makefile for ali hec dirver
+#
+obj-$(CONFIG_ALI_HEC) += alihec.o
+#alihec-y += ali_hec.o

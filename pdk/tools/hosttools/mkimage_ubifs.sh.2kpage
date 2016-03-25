@@ -1,0 +1,47 @@
+#/bin/sh
+
+# use shell funcs
+. $LINUX_SRC_DIR/../tools/hosttools/funcs.sh
+IMAGE_ROOTFS_DIR=$LINUX_SRC_DIR/install/fs
+HOSTTOOLS_DIR=$LINUX_SRC_DIR/../tools/hosttools
+IMAGES_DIR=$LINUX_SRC_DIR/install/bin
+
+echo
+echo "separate fs for flash with 2KiB-page 128MiB-size..."
+
+# ubi partition and cfg name
+ROOTFS_NAME=rootfs
+ROOTFS_VOL_NAME=rootfs
+#DBFS_NAME=dbfs
+#DBFS_VOL_NAME=dbfs
+ROOTFS_UBI_CFG=$ROOTFS_NAME-ubi.cfg
+ROOTFS_UBI_IMG=$ROOTFS_NAME-ubi.img
+#DBFS_UBI_CFG=$DBFS_NAME-ubi.cfg
+#DBFS_UBI_IMG=$DBFS_NAME-ubi.img
+
+# flash parameters
+FLASH_SIZE=128MiB
+FLASH_BLOCK_SIZE=128KiB
+FLASH_PAGE_SIZE=2KiB
+FLASH_LOGIC_SIZE=124KiB
+
+# create /etc/resolv.conf for tmpfs
+touch $IMAGE_ROOTFS_DIR/etc/resolv.conf
+checkit
+
+
+cd $LINUX_SRC_DIR/install/bin
+
+# create ubi cfg file
+check "$HOSTTOOLS_DIR/genubicfg -f $FLASH_SIZE -b $FLASH_BLOCK_SIZE -p $FLASH_PAGE_SIZE -N $ROOTFS_VOL_NAME -n $ROOTFS_NAME Ali_nand_desc.xml.2kpage"
+#check "$HOSTTOOLS_DIR/genubicfg -f $FLASH_SIZE -b $FLASH_BLOCK_SIZE -p $FLASH_PAGE_SIZE -N $DBFS_VOL_NAME -n $DBFS_NAME Ali_nand_desc.xml"
+
+# make rootfs image
+ROOTFS_UBI_LEB_MSIZE=`cat $IMAGES_DIR/$ROOTFS_UBI_CFG | grep vol_size | awk -F= '{ print $2 }' | awk -FM '{print $1}'`
+ROOTFS_UBI_MAX_VOLSIZE=`expr $ROOTFS_UBI_LEB_MSIZE \* 1024 / 124`
+echo "Max rootfs vol_size is $ROOTFS_UBI_MAX_VOLSIZE"
+
+check "$HOSTTOOLS_DIR/mkfs.ubifs -F -r $IMAGE_ROOTFS_DIR -m $FLASH_PAGE_SIZE -e $FLASH_LOGIC_SIZE -c $ROOTFS_UBI_MAX_VOLSIZE -o $ROOTFS_UBI_IMG"
+check "$HOSTTOOLS_DIR/ubinize -o $ROOTFS_NAME\_ubi_2k.img -m $FLASH_PAGE_SIZE -p $FLASH_BLOCK_SIZE $ROOTFS_UBI_CFG"
+
+

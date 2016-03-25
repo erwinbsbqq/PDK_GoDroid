@@ -1,0 +1,103 @@
+#
+# Makefile for the kernel OpenVG device drivers.
+#
+# Feature 
+USING_GPL ?= 1
+
+ifeq ($(ALI_OVG_MMU_ON), y)
+USING_MMU ?= 1
+else
+USING_MMU ?= 0
+endif
+
+USING_MMU_DEBUG ?= 0
+USING_MEMORY_DEBUG ?= 0
+USING_REALLOC ?= 0
+
+ifeq ($(ALI_OVG_BOARDSETTING_ON), y)
+USING_BOARDSETTING ?= 1
+else
+USING_BOARDSETTING ?= 0
+endif
+
+# Linux version (for 2.6.32, 2.6.28 Linux) 
+#USING_KERNEL_VERSION ?= 352
+USING_KERNEL_VERSION ?= 28
+#USING_KERNEL_VERSION ?= 32
+
+# Memory allocate mechanism
+ifeq ($(ALI_OVG_MEM_OS), y)
+USING_MEMPOLL ?= MEMORY_OS_STRATEGY
+endif
+
+ifeq ($(ALI_OVG_MEM_POOL), y)
+USING_MEMPOLL ?= MEMORY_POOL_STRATEGY
+endif
+
+ifeq ($(ALI_OVG_MEM_BUDDY), y)
+USING_MEMPOLL ?= MEMORY_BUDDY_STRATEGY
+endif
+
+ifeq ($(USING_KERNEL_VERSION), 28)
+KERNELDIR := ../../kernel/linux
+#KERNELDIR := /home/joy.wang/Workspace/sf-kernel
+DEFINES = -DLINUX_VERSION_28
+endif
+ifeq ($(USING_KERNEL_VERSION), 32)
+#KERNELDIR := /home/joy.wang/Workspace/Linux_Kernel_git/sf-kernel
+#KERNELDIR := /home/joy.wang/Workspace/sf-kernel
+KERNELDIR := /home/allen.chen/sf-kernel_old2
+DEFINES = -DLINUX_VERSION_32
+endif
+
+###### Platform define 
+
+DEFINES += -DC3701_PLATFORM
+#DEFINES += -DS3701_PLATFORM
+#DEFINES += -DC3901_PLATFORM
+
+###### Function define 
+
+DEFINES += -DMMU_ENABLED=$(USING_MMU)
+DEFINES += -DMMU_DBG_ENABLED=$(USING_MMU_DEBUG)
+DEFINES += -DREALLOC_ENABLED=$(USING_REALLOC)
+DEFINES += -DALI_OPENVG_GPL=$(USING_GPL)
+DEFINES += -DUTILIZE_BOARDSETTING=$(USING_BOARDSETTING)
+DEFINES += -DMEMORY_DEBUG=$(USING_MEMORY_DEBUG)
+DEFINES += -DSHARED_MEM
+DEFINES += -DPAGE_ADDRESS_FIX
+
+EXTRA_CFLAGS = -O3 $(DEFINES)
+
+
+obj-$(CONFIG_ALI_OPENVG) += aliovg.o
+
+
+aliovg-objs := ali_ovg_core.o ali_ovg_util.o ali_ovg_mmu.o
+	
+ifeq ($(USING_MMU), 1)
+	aliovg-objs += ali_ovg_dbg.o
+	ifeq ($(USING_MEMPOLL), MEMORY_POOL_STRATEGY)
+		aliovg-objs += ali_ovg_reservedMMU.o ali_ovg_osMMU.o
+		DEFINES += -DMEMORY_POOL_OS
+	endif
+	ifeq ($(USING_MEMPOLL), MEMORY_OS_STRATEGY)
+		aliovg-objs += ali_ovg_osMMU.o
+		DEFINES += -DMEMORY_OS
+	endif
+endif	
+
+ifeq ($(USING_MEMPOLL), MEMORY_POOL_STRATEGY)
+	aliovg-objs += ali_ovg_mempool.o ali_ovg_platform.o
+endif
+ifeq ($(USING_MEMPOLL), MEMORY_OS_STRATEGY)
+	aliovg-objs += ali_ovg_mem_dynamic.o
+endif
+ifeq ($(USING_MEMPOLL), MEMORY_BUDDY_STRATEGY)
+	aliovg-objs += ali_ovg_buddy.o
+endif
+
+
+
+
+

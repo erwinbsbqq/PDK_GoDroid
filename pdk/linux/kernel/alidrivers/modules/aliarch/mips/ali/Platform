@@ -1,0 +1,14 @@
+#
+# ALI M36 boards
+#
+platform-$(CONFIG_ALI_M36)	+= ali/m36/
+cflags-$(CONFIG_ALI_M36)	+= -I$(srctree)/arch/mips/include/asm/mach-ali
+ifdef CONFIG_ALI_M3701C
+load-$(CONFIG_ALI_M36)	        += 0xffffffff80100000
+else
+ifdef CONFIG_ALI_M3503
+load-$(CONFIG_ALI_M36)	        += 0xffffffff80100000
+else
+load-$(CONFIG_ALI_M36)	        += 0xffffffff88100000
+endif
+endif

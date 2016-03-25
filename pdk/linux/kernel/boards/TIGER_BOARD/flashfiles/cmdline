@@ -1,0 +1,1 @@
+console=ttyS0,115200 mem=1024M root=/dev/ram0 rootfstype=ramfs

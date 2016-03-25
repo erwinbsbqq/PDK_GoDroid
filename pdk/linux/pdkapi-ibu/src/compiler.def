@@ -1,0 +1,23 @@
+# Global switchs for program
+#   _DEBUG_PRINTF_: enable PRINTF function, else nothing will do.
+#       <api/libc/printf.h>
+#   _DEBUG_VERSION_:  disable SDRAM init and copy code from FLASH
+#       to SDRAM. <boot.s>
+
+ALISDK_INC_DIR = /opt/alisdk/include
+
+DEFS = -D_DEBUG_VERSION_ -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -D_LARGEFILE64_SOURCE
+
+ifneq ($(strip $(BUILD_APP_MODE_TEST)),)
+DEFS += -DBUILD_FOR_TEST
+endif
+
+LIB = $(INC_BASELIBS_CFLAGS)
+
+CFLAGS += $(COMMON_CFLAGS) -W -Wno-packed-bitfield-compat ${DEFS} -I${INC_DIR} -I${INC_ALIDRIVER_DIR} -I${INC_LINUX_DIR} -I${ALISDK_INC_DIR}
+
+CXXFLAGS = $(COMMON_CXXFLAGS) -W -Wno-packed-bitfield-compat ${DEFS} -I${INC_DIR} -I${INC_ALIDRIVER_DIR} -I${INC_LINUX_DIR} -I${ALISDK_INC_DIR}
+
+LDFLAGS += $(COMMON_LDFLAGS)
+
+PWD := $(shell pwd)

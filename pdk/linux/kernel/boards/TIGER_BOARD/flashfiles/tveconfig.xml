@@ -1,0 +1,1556 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+#define CB_LEVEL_PAL_SD				0x85
+#define CB_LEVEL_NTSC_SD                   0x85
+#define CR_LEVEL_PAL_SD				0x55
+#define CR_LEVEL_NTSC_SD			0x55
+#define LUMA_LEVEL_PAL_SD			0x51
+#define LUMA_LEVEL_NTSC_SD			0x4e
+#define CHRMA_LEVEL_PAL_SD			0x02
+#define CHRMA_LEVEL_NTSC_SD		0x08
+#define FREQ_RESPONSE_PAL_SD		0x102
+#define FREQ_RESPONSE_NTSC_SD		0x102
+
+//tvencoder adjustable register define
+#define TVE_ADJ_COMPOSITE_Y_DELAY       0
+#define TVE_ADJ_COMPOSITE_C_DELAY       1
+#define TVE_ADJ_COMPONENT_Y_DELAY       2
+#define TVE_ADJ_COMPONENT_CB_DELAY      3
+#define TVE_ADJ_COMPONENT_CR_DELAY      4
+#define TVE_ADJ_BURST_LEVEL_ENABLE      5
+#define TVE_ADJ_BURST_CB_LEVEL          6
+#define TVE_ADJ_BURST_CR_LEVEL          7
+#define TVE_ADJ_COMPOSITE_LUMA_LEVEL    8
+#define TVE_ADJ_COMPOSITE_CHRMA_LEVEL   9
+#define TVE_ADJ_PHASE_COMPENSATION      10
+#define TVE_ADJ_VIDEO_FREQ_RESPONSE     11
+//secam adjust value
+#define TVE_ADJ_SECAM_PRE_COEFFA3A2    12
+#define TVE_ADJ_SECAM_PRE_COEFFB1A4    13
+#define TVE_ADJ_SECAM_PRE_COEFFB3B2    14
+#define TVE_ADJ_SECAM_F0CB_CENTER        15
+#define TVE_ADJ_SECAM_F0CR_CENTER        16
+#define TVE_ADJ_SECAM_FM_KCBCR_AJUST  17
+#define TVE_ADJ_SECAM_CONTROL                    18
+#define TVE_ADJ_SECAM_NOTCH_COEFB1     19
+#define TVE_ADJ_SECAM_NOTCH_COEFB2B3     20
+#define TVE_ADJ_SECAM_NOTCH_COEFA2A3     21
+#define TVE_ADJ_VIDEO_DAC_FS			    22
+#define TVE_ADJ_C_ROUND_PAR				    23
+
+//advance tvencoder adjustable register define
+#define TVE_ADJ_ADV_PEDESTAL_ONOFF              0
+#define TVE_ADJ_ADV_COMPONENT_LUM_LEVEL         1
+#define TVE_ADJ_ADV_COMPONENT_CHRMA_LEVEL       2
+#define TVE_ADJ_ADV_COMPONENT_PEDESTAL_LEVEL    3
+#define TVE_ADJ_ADV_COMPONENT_SYNC_LEVEL        4
+#define TVE_ADJ_ADV_RGB_R_LEVEL                 5
+#define TVE_ADJ_ADV_RGB_G_LEVEL                 6
+#define TVE_ADJ_ADV_RGB_B_LEVEL                 7
+#define TVE_ADJ_ADV_COMPOSITE_PEDESTAL_LEVEL    8
+#define TVE_ADJ_ADV_COMPOSITE_SYNC_LEVEL        9
+#define TVE_ADJ_ADV_PLUG_OUT_EN       10
+#define TVE_ADJ_ADV_PLUG_DETECT_LINE_CNT_SD 11
+#define TVE_ADJ_ADV_PLUG_DETECT_AMP_ADJUST_SD 12
+
+
+typedef enum eTVE_ADJ_FILED
+{
+    TVE_COMPOSITE_Y_DELAY = 0,
+    TVE_COMPOSITE_C_DELAY = 1,
+    TVE_COMPOSITE_LUMA_LEVEL = 2,
+    TVE_COMPOSITE_CHRMA_LEVEL =3 ,
+    TVE_COMPOSITE_SYNC_DELAY =4 ,
+    TVE_COMPOSITE_SYNC_LEVEL =5,
+    TVE_COMPOSITE_FILTER_C_ENALBE=6 ,
+    TVE_COMPOSITE_FILTER_Y_ENALBE=7 ,
+    TVE_COMPOSITE_PEDESTAL_LEVEL=8 ,
+    TVE_COMPONENT_IS_PAL=9 ,
+    
+    TVE_COMPONENT_PAL_MODE=10 ,
+    TVE_COMPONENT_ALL_SMOOTH_ENABLE=11,
+    TVE_COMPONENT_BTB_ENALBE =12,
+    TVE_COMPONENT_INSERT0_ONOFF=13 ,
+    TVE_COMPONENT_DAC_UPSAMPLEN =14,
+    TVE_COMPONENT_Y_DELAY =15,
+    TVE_COMPONENT_CB_DELAY =16,
+    TVE_COMPONENT_CR_DELAY =17,
+    TVE_COMPONENT_LUM_LEVEL =18,
+    TVE_COMPONENT_CHRMA_LEVEL =19,
+    
+    TVE_COMPONENT_PEDESTAL_LEVEL =20,    
+    TVE_COMPONENT_UV_SYNC_ONOFF =21,
+    TVE_COMPONENT_SYNC_DELAY =22,
+    TVE_COMPONENT_SYNC_LEVEL =23,
+    TVE_COMPONENT_R_SYNC_ONOFF =24,
+    TVE_COMPONENT_G_SYNC_ONOFF =25,
+    TVE_COMPONENT_B_SYNC_ONOFF =26,
+    TVE_COMPONENT_RGB_R_LEVEL =27,
+    TVE_COMPONENT_RGB_G_LEVEL =28,
+    TVE_COMPONENT_RGB_B_LEVEL =29,
+    
+    TVE_COMPONENT_FILTER_Y_ENALBE =30,
+    TVE_COMPONENT_FILTER_C_ENALBE =31,
+    TVE_COMPONENT_PEDESTAL_ONOFF =32,
+    TVE_COMPONENT_PED_RGB_YPBPR_ENABLE=33 ,
+    TVE_COMPONENT_PED_ADJUST =34,
+    TVE_COMPONENT_G2Y =35,
+    TVE_COMPONENT_G2U =36,
+    TVE_COMPONENT_G2V =37,
+    TVE_COMPONENT_B2U =38,
+    TVE_COMPONENT_R2V =39,
+    
+    TVE_BURST_POS_ENABLE =40,
+    TVE_BURST_LEVEL_ENABLE =41,
+    TVE_BURST_CB_LEVEL =42,
+    TVE_BURST_CR_LEVEL =43,
+    TVE_BURST_START_POS =44,
+    TVE_BURST_END_POS =45,
+    TVE_BURST_SET_FREQ_MODE =46,
+    TVE_BURST_FREQ_SIGN =47,
+    TVE_BURST_PHASE_COMPENSATION =48,
+    TVE_BURST_FREQ_RESPONSE =49,
+    
+    TVE_ASYNC_FIFO =50,
+    TVE_CAV_SYNC_HIGH =51,
+    TVE_SYNC_HIGH_WIDTH =52,
+    TVE_SYNC_LOW_WIDTH =53,    
+    TVE_VIDEO_DAC_FS =54,    
+    TVE_SECAM_PRE_COEFFA3A2 =55,
+    TVE_SECAM_PRE_COEFFB1A4 =56,
+    TVE_SECAM_PRE_COEFFB3B2 =57,
+    TVE_SECAM_F0CB_CENTER =58,
+    TVE_SECAM_F0CR_CENTER =59,
+    
+    TVE_SECAM_FM_KCBCR_AJUST =60,
+    TVE_SECAM_CONTROL =61,
+    TVE_SECAM_NOTCH_COEFB1 =62,
+    TVE_SECAM_NOTCH_COEFB2B3 =63,
+    TVE_SECAM_NOTCH_COEFA2A3 =64,
+    TVE_COMPONENT_PLUG_OUT_EN =65,
+    TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD =66,
+    TVE_CB_CR_INSERT_SW =67,
+    TVE_VBI_LINE21_EN =68,
+    TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD =69,
+    
+    TVE_SCART_PLUG_DETECT_LINE_CNT_HD =70,
+    TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD =71,
+    TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT =72,
+    TVE_COMPONENT_PLUG_DETECT_VCOUNT =73,
+    TVE_COMPONENT_VDAC_ENBUF =74,
+    TVE_ADJ_FIELD_NUM =75,
+}T_eTVE_ADJ_FILED;
+
+typedef enum _eTV_SYS
+{
+    SYS_576I = 0,
+    SYS_480I = 1,
+    SYS_576P =2 ,
+    SYS_480P =3,
+    SYS_720P_50 = 4,
+    SYS_720P_60 = 5,
+    SYS_1080I_25= 6,
+    SYS_1080I_30 =7,
+
+    SYS_1080P_24=8,
+    SYS_1080P_25=9,
+    SYS_1080P_30=10,
+
+    SYS_1152I_25=11,
+    SYS_1080IASS=12,
+
+    SYS_1080P_50=13,
+    SYS_1080P_60=14,
+
+    TVE_SYS_NUM=15,
+}T_eTVE_SYS;
+
+#define	SYS_525_LINE	0
+#define	SYS_625_LINE	1
+
+#define TVE_SYSTEM_NUM              20
+#define TVE_ADJ_FIELD_NUMBER    100
+#define TVE_ADJ_REG_NUM             100
+#define TVE_ADV_ADJ_REG_NUM        100
+
+struct tve_adjust_element
+{
+	unsigned int field_index;
+	unsigned int field_value;
+};
+
+struct tve_adjust_table
+{
+	unsigned int index;
+	struct tve_adjust_element field_info[TVE_ADJ_FIELD_NUMBER];
+};
+
+struct sd_tve_adjust_table 
+{
+	unsigned char type;
+	unsigned char sys;
+	unsigned int value;
+};
+
+typedef struct
+{
+	struct tve_adjust_table tve_adjust_table_info[TVE_SYSTEM_NUM];       //804 * 20
+	struct sd_tve_adjust_table sd_tve_adj_table_info[TVE_ADJ_REG_NUM];      //8 * 100
+	struct sd_tve_adjust_table sd_tve_adv_adj_table_info[TVE_ADV_ADJ_REG_NUM];    // 8 * 100
+	unsigned char reserve[8944];
+}ADF_BOOT_TVEINFO; // maximun is 26k = 26 X 1024 =  26624 bytes
+
+-->
+<tve_config>
+	<tve_adjust_table_info table_size="804" table_count="20" item_size="8" item_count="100">
+		<table sys_index="SYS_576I">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x3"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x6"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x51"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x66"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x3"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x3"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x1"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x0"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x51"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0xb"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x0"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x48"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x48"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x48"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x205"/>
+			<item index="TVE_COMPONENT_R2V" value="0x198"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x1"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x1"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0x96"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x6a"/>				
+			<item index="TVE_BURST_START_POS" value="0x55"/>
+			<item index="TVE_BURST_END_POS" value="0x74"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x61e8"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x2"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x0"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x0"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0x0"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>		
+			
+    			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x4"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>		    						
+		</table>
+		
+		<table sys_index="SYS_480I">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x3"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x4d"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x61"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x6"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x2"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x0"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x4f"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x51"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x8"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x4"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x2"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x0"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x48"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x48"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x48"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x1"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0xaf"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x205"/>
+			<item index="TVE_COMPONENT_R2V" value="0x198"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x1"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x55"/>
+			<item index="TVE_BURST_END_POS" value="0x74"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x3400"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x2"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x0"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x0"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0x0"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+    			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x7"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x1"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x1"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>		  			
+		</table>		
+		
+		<table sys_index="SYS_576P">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x0"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x0"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x0"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x51"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0xa"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x7"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x48"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x48"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x48"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x205"/>
+			<item index="TVE_COMPONENT_R2V" value="0x198"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x2"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x0"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x0"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0x0"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0xe"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>		  
+		</table>		
+		<table sys_index="SYS_480P">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x0"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x0"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x0"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x51"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0xa"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x48"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x48"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x48"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x205"/>
+			<item index="TVE_COMPONENT_R2V" value="0x198"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x2"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x0"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x0"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0x0"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0xe"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>				
+		</table>			
+		<table sys_index="SYS_720P_50">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x0"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x0"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x6"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x51"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x0"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x21d"/>
+			<item index="TVE_COMPONENT_R2V" value="0x1cb"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x2"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x3"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x7"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0xf"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x6"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>				
+		</table>	
+		<table sys_index="SYS_720P_60">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x0"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x0"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x5"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x5"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x5"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x51"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x0"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x21d"/>
+			<item index="TVE_COMPONENT_R2V" value="0x1cb"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x2"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x3"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x7"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0xc"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x6"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>					
+		</table>		
+		<table sys_index="SYS_1080I_25">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x0"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x0"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x0"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x0"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x21d"/>
+			<item index="TVE_COMPONENT_R2V" value="0x1cb"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x2"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x3"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x0"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0x0"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x6"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>		
+		</table>
+		<table sys_index="SYS_1080I_30">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x0"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x0"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x0"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x0"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x1"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x21d"/>
+			<item index="TVE_COMPONENT_R2V" value="0x1cb"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x2"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x3"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x0"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0x0"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x6"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>					
+		</table>		
+		<table sys_index="SYS_1080P_24">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x0"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x0"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x6"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x0"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x5"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x0"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x21d"/>
+			<item index="TVE_COMPONENT_R2V" value="0x1cb"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x2"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x3"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x6"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0xd"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x6"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>					
+		</table>
+		<table sys_index="SYS_1080P_25">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x0"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x0"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x6"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x0"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x5"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x0"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x21d"/>
+			<item index="TVE_COMPONENT_R2V" value="0x1cb"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x2"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x3"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x6"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0xd"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x6"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>						
+		</table>		
+		<table sys_index="SYS_1080P_30">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x0"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x0"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x5"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x5"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x5"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x0"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x5"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x0"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x21d"/>
+			<item index="TVE_COMPONENT_R2V" value="0x1cb"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x2"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x3"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x6"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0xd"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x6"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>					
+		</table>				
+		<table sys_index="SYS_1152I_25">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x2"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x50"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x68"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x4"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x0"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x6"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x51"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x0"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x5"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x4"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x0"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x36"/>
+			<item index="TVE_COMPONENT_G2V" value="0x88"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x21d"/>
+			<item index="TVE_COMPONENT_R2V" value="0x1cb"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x4"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x1"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x6"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0xd"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x6"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>					
+		</table>	
+		<table sys_index="SYS_1080IASS">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x2"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x50"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x68"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x4"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x0"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x6"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x6"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x51"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x0"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x5"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x4"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x0"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x36"/>
+			<item index="TVE_COMPONENT_G2V" value="0x88"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x21d"/>
+			<item index="TVE_COMPONENT_R2V" value="0x1cb"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x4"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x1"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x6"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0xd"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x6"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x0"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>					
+		</table>		
+		<table sys_index="SYS_1080P_50">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x0"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x0"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x4"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x5"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x5"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x0"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x4"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x0"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x21d"/>
+			<item index="TVE_COMPONENT_R2V" value="0x1cb"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x1"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x2"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0x0"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0xd"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x6"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x1"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>					
+		</table>			
+		<table sys_index="SYS_1080P_60">
+			<item index="TVE_COMPOSITE_Y_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_C_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_LUMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_CHRMA_LEVEL" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPOSITE_SYNC_LEVEL" value="0x0"/>	
+			<item index="TVE_COMPOSITE_FILTER_C_ENALBE" value="0x0"/>
+			<item index="TVE_COMPOSITE_FILTER_Y_ENALBE" value="0x0"/>				
+			<item index="TVE_COMPOSITE_PEDESTAL_LEVEL" value="0x0"/>
+			
+			
+			<item index="TVE_COMPONENT_IS_PAL" value="0x0"/>
+			<item index="TVE_COMPONENT_PAL_MODE" value="0x0"/>
+			<item index="TVE_COMPONENT_ALL_SMOOTH_ENABLE" value="0x0"/>	
+			<item index="TVE_COMPONENT_BTB_ENALBE" value="0x0"/>
+			<item index="TVE_COMPONENT_INSERT0_ONOFF" value="0x1"/>				
+			<item index="TVE_COMPONENT_DAC_UPSAMPLEN" value="0x1"/>
+			<item index="TVE_COMPONENT_Y_DELAY" value="0x4"/>
+			<item index="TVE_COMPONENT_CB_DELAY" value="0x5"/>
+			<item index="TVE_COMPONENT_CR_DELAY" value="0x5"/>					
+			<item index="TVE_COMPONENT_LUM_LEVEL" value="0x53"/>
+			<item index="TVE_COMPONENT_CHRMA_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_LEVEL" value="0x0"/>
+			<item index="TVE_COMPONENT_UV_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_DELAY" value="0x0"/>
+			<item index="TVE_COMPONENT_SYNC_LEVEL" value="0x1"/>
+			<item index="TVE_COMPONENT_R_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_G_SYNC_ONOFF" value="0x0"/>				
+			<item index="TVE_COMPONENT_B_SYNC_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_RGB_R_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_G_LEVEL" value="0x50"/>
+			<item index="TVE_COMPONENT_RGB_B_LEVEL" value="0x50"/>				
+			<item index="TVE_COMPONENT_FILTER_Y_ENALBE" value="0x1"/>
+			<item index="TVE_COMPONENT_FILTER_C_ENALBE" value="0x1"/>				
+			<item index="TVE_COMPONENT_PEDESTAL_ONOFF" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_RGB_YPBPR_ENABLE" value="0x0"/>
+			<item index="TVE_COMPONENT_PED_ADJUST" value="0x0"/>
+			<item index="TVE_COMPONENT_G2Y" value="0x12a"/>
+			<item index="TVE_COMPONENT_G2U" value="0x64"/>
+			<item index="TVE_COMPONENT_G2V" value="0xd0"/>				
+			<item index="TVE_COMPONENT_B2U" value="0x21d"/>
+			<item index="TVE_COMPONENT_R2V" value="0x1cb"/>
+			
+			
+			<item index="TVE_BURST_POS_ENABLE" value="0x0"/>
+			<item index="TVE_BURST_LEVEL_ENABLE" value="0x0"/>			
+			<item index="TVE_BURST_CB_LEVEL" value="0xd4"/>
+			<item index="TVE_BURST_CR_LEVEL" value="0x0"/>				
+			<item index="TVE_BURST_START_POS" value="0x0"/>
+			<item index="TVE_BURST_END_POS" value="0x0"/>
+			<item index="TVE_BURST_SET_FREQ_MODE" value="0x0"/>
+			<item index="TVE_BURST_FREQ_SIGN" value="0x0"/>			
+			<item index="TVE_BURST_PHASE_COMPENSATION" value="0x0"/>
+			<item index="TVE_BURST_FREQ_RESPONSE" value="0x0"/>	
+			
+						
+			<item index="TVE_ASYNC_FIFO" value="0x1"/>
+			<item index="TVE_CAV_SYNC_HIGH" value="0x2"/>
+			<item index="TVE_SYNC_HIGH_WIDTH" value="0xb"/>
+			<item index="TVE_SYNC_LOW_WIDTH" value="0xb"/>
+			
+			
+			<item index="TVE_VIDEO_DAC_FS" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFA3A2" value="0x0"/>				
+			<item index="TVE_SECAM_PRE_COEFFB1A4" value="0x0"/>
+			<item index="TVE_SECAM_PRE_COEFFB3B2" value="0x0"/>
+			<item index="TVE_SECAM_F0CB_CENTER" value="0x0"/>
+			<item index="TVE_SECAM_F0CR_CENTER" value="0x0"/>				
+			<item index="TVE_SECAM_FM_KCBCR_AJUST" value="0x0"/>
+			<item index="TVE_SECAM_CONTROL" value="0x0"/>				
+			<item index="TVE_SECAM_NOTCH_COEFB1" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFB2B3" value="0x0"/>
+			<item index="TVE_SECAM_NOTCH_COEFA2A3" value="0x0"/>	
+			
+			<item index="TVE_COMPONENT_PLUG_OUT_EN" value="0x1"/>
+    			<item index="TVE_COMPONENT_PLUG_DETECT_LINE_CNT_HD" value="0x6"/>	
+			<item index="TVE_CB_CR_INSERT_SW" value="0x1"/>	
+			<item index="TVE_VBI_LINE21_EN" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_AMP_ADJUST_HD" value="0x60"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_LINE_CNT_HD" value="0x0"/>		    		
+			<item index="TVE_SCART_PLUG_DETECT_AMP_ADJUST_HD" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_FRAME_COUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_PLUG_DETECT_VCOUNT" value="0x0"/>		    		
+			<item index="TVE_COMPONENT_VDAC_ENBUF" value="0x0"/>					
+		</table>							
+	</tve_adjust_table_info>
+	
+	<sd_tve_adj_table_info item_size="8" item_count="100">
+		<item type="TVE_ADJ_COMPOSITE_Y_DELAY" sys="SYS_625_LINE" value="0x1"/>
+		<item type="TVE_ADJ_COMPOSITE_Y_DELAY" sys="SYS_525_LINE" value="0x1"/>
+		<item type="TVE_ADJ_COMPOSITE_C_DELAY" sys="SYS_625_LINE" value="0x0"/>
+		<item type="TVE_ADJ_COMPOSITE_C_DELAY" sys="SYS_525_LINE" value="0x0"/>		
+		<item type="TVE_ADJ_COMPONENT_Y_DELAY" sys="SYS_625_LINE" value="0x4"/>
+		<item type="TVE_ADJ_COMPONENT_Y_DELAY" sys="SYS_525_LINE" value="0x4"/>	
+		<item type="TVE_ADJ_COMPONENT_CB_DELAY" sys="SYS_625_LINE" value="0x3"/>
+		<item type="TVE_ADJ_COMPONENT_CB_DELAY" sys="SYS_525_LINE" value="0x3"/>		
+		<item type="TVE_ADJ_COMPONENT_CR_DELAY" sys="SYS_625_LINE" value="0x1"/>
+		<item type="TVE_ADJ_COMPONENT_CR_DELAY" sys="SYS_525_LINE" value="0x1"/>			
+		<item type="TVE_ADJ_BURST_LEVEL_ENABLE" sys="SYS_625_LINE" value="0x1"/>
+		<item type="TVE_ADJ_BURST_LEVEL_ENABLE" sys="SYS_525_LINE" value="0x0"/>			
+		<item type="TVE_ADJ_BURST_CB_LEVEL" sys="SYS_625_LINE" value="CB_LEVEL_PAL_SD"/>
+		<item type="TVE_ADJ_BURST_CB_LEVEL" sys="SYS_525_LINE" value="CB_LEVEL_NTSC_SD"/>		
+		<item type="TVE_ADJ_BURST_CR_LEVEL" sys="SYS_625_LINE" value="CR_LEVEL_PAL_SD"/>
+		<item type="TVE_ADJ_BURST_CR_LEVEL" sys="SYS_525_LINE" value="CR_LEVEL_NTSC_SD"/>			
+		<item type="TVE_ADJ_COMPOSITE_LUMA_LEVEL" sys="SYS_625_LINE" value="LUMA_LEVEL_PAL_SD"/>
+		<item type="TVE_ADJ_COMPOSITE_LUMA_LEVEL" sys="SYS_525_LINE" value="LUMA_LEVEL_NTSC_SD"/>				
+		<item type="TVE_ADJ_COMPOSITE_CHRMA_LEVEL" sys="SYS_625_LINE" value="CHRMA_LEVEL_PAL_SD"/>
+		<item type="TVE_ADJ_COMPOSITE_CHRMA_LEVEL" sys="SYS_525_LINE" value="CHRMA_LEVEL_NTSC_SD"/>	
+		<item type="TVE_ADJ_PHASE_COMPENSATION" sys="SYS_625_LINE" value="0x0289"/>
+		<item type="TVE_ADJ_PHASE_COMPENSATION" sys="SYS_525_LINE" value="0x009a"/>			
+		<item type="TVE_ADJ_VIDEO_FREQ_RESPONSE" sys="SYS_625_LINE" value="FREQ_RESPONSE_PAL_SD"/>
+		<item type="TVE_ADJ_VIDEO_FREQ_RESPONSE" sys="SYS_525_LINE" value="FREQ_RESPONSE_NTSC_SD"/>			
+	</sd_tve_adj_table_info>
+	
+	<sd_tve_adv_adj_table_info item_size="8" item_count="100">
+		<item type="TVE_ADJ_ADV_PEDESTAL_ONOFF" sys="SYS_625_LINE" value="0x0"/>
+		<item type="TVE_ADJ_ADV_PEDESTAL_ONOFF" sys="SYS_525_LINE" value="0x1"/>
+		<item type="TVE_ADJ_ADV_COMPONENT_LUM_LEVEL" sys="SYS_625_LINE" value="0x53"/>
+		<item type="TVE_ADJ_ADV_COMPONENT_LUM_LEVEL" sys="SYS_525_LINE" value="0x4f"/>		
+		<item type="TVE_ADJ_ADV_COMPONENT_CHRMA_LEVEL" sys="SYS_625_LINE" value="0x51"/>
+		<item type="TVE_ADJ_ADV_COMPONENT_CHRMA_LEVEL" sys="SYS_525_LINE" value="0x51"/>		
+		<item type="TVE_ADJ_ADV_COMPONENT_PEDESTAL_LEVEL" sys="SYS_625_LINE" value="0x0"/>
+		<item type="TVE_ADJ_ADV_COMPONENT_PEDESTAL_LEVEL" sys="SYS_525_LINE" value="0x9"/>			
+		<item type="TVE_ADJ_ADV_COMPONENT_SYNC_LEVEL" sys="SYS_625_LINE" value="0x0"/>
+		<item type="TVE_ADJ_ADV_COMPONENT_SYNC_LEVEL" sys="SYS_525_LINE" value="0x4"/>	
+		<item type="TVE_ADJ_ADV_RGB_R_LEVEL" sys="SYS_625_LINE" value="0x8f"/>
+		<item type="TVE_ADJ_ADV_RGB_R_LEVEL" sys="SYS_525_LINE" value="0x92"/>		
+		<item type="TVE_ADJ_ADV_RGB_G_LEVEL" sys="SYS_625_LINE" value="0x8e"/>
+		<item type="TVE_ADJ_ADV_RGB_G_LEVEL" sys="SYS_525_LINE" value="0x91"/>
+		<item type="TVE_ADJ_ADV_RGB_B_LEVEL" sys="SYS_625_LINE" value="0x8e"/>
+		<item type="TVE_ADJ_ADV_RGB_B_LEVEL" sys="SYS_525_LINE" value="0x91"/>		
+		<item type="TVE_ADJ_ADV_COMPOSITE_PEDESTAL_LEVEL" sys="SYS_625_LINE" value="0x0"/>
+		<item type="TVE_ADJ_ADV_COMPOSITE_PEDESTAL_LEVEL" sys="SYS_525_LINE" value="0x2b"/>	
+		<item type="TVE_ADJ_ADV_COMPOSITE_SYNC_LEVEL" sys="SYS_625_LINE" value="0x0"/>
+		<item type="TVE_ADJ_ADV_COMPOSITE_SYNC_LEVEL" sys="SYS_525_LINE" value="0x4"/>	
+		<item type="TVE_ADJ_ADV_PLUG_OUT_EN" sys="SYS_625_LINE" value="0x0"/>
+		<item type="TVE_ADJ_ADV_PLUG_OUT_EN" sys="SYS_525_LINE" value="0x0"/>	
+		<item type="TVE_ADJ_ADV_PLUG_DETECT_LINE_CNT_SD" sys="SYS_625_LINE" value="0x0"/>
+		<item type="TVE_ADJ_ADV_PLUG_DETECT_LINE_CNT_SD" sys="SYS_525_LINE" value="0x0"/>	
+		<item type="TVE_ADJ_ADV_PLUG_DETECT_AMP_ADJUST_SD" sys="SYS_625_LINE" value="0x42"/>
+		<item type="TVE_ADJ_ADV_PLUG_DETECT_AMP_ADJUST_SD" sys="SYS_525_LINE" value="0x40"/>	
+	</sd_tve_adv_adj_table_info>
+	<rsv type="ubyte" size="8944"></rsv>
+</tve_config>

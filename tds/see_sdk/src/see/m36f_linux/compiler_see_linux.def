@@ -1,0 +1,104 @@
+### Directory where gcc existed.
+#CC_DIR = $(dir $(shell which sde-gcc.exe))..
+#CC_DIR = /opt/mipsel-4.4
+CC_DIR = /opt/mips-4.3
+CC_VER = 4.3.3
+CCBIN_DIR = ${CC_DIR}/bin
+CCTOOL = mips-sde-elf-
+
+### Compiler option that change by QT / RD or Customer
+#_BUILD_OTA_E_=1
+#_SHOW_ALI_DEMO_ON_SCREEN = 1
+#_HDCP_IN_FLASH = 1
+#_SFU_TEST_SUPPORT=1
+#_SATA_SUPPORT=1
+#_OPENSSL_ENABLE = 1
+
+### Warning: Do NOT modify blew code, unless you know what you are doing.
+
+#APPRELEASE = 1.0.0
+APPLABEL = Sab3602_S2_20100524_HDDual
+LIBCORERELEASE = 1.1.5a
+LIBCORELABEL = SDK_20100524
+#LIBPLUSRELEASE	= 1.0.2
+LIBPLUSLABEL = ${APPLABEL}
+
+# Global switchs for program
+# _DEBUG_PRINTF_: enable PRINTF function, else nothing will do.
+# _DEBUG_VERSION_: disable SDRAM init and copy code from FLASH to SDRAM. <boot.s>
+
+# _M36F_SINGLE_CPU only test for Ali internal
+#export _M36F_SINGLE_CPU=1
+export _MPEG4_SUPPORT=1
+
+DEFS = -D_DEBUG_VERSION_
+
+LINUX_BUILD = 1
+
+ifdef _BUILD_OTA_E_
+DEFS += -D_BUILD_OTA_E_
+endif
+
+ifdef _SHOW_ALI_DEMO_ON_SCREEN
+DEFS += -D_SHOW_ALI_DEMO_ON_SCREEN
+endif
+
+ifdef _HDCP_IN_FLASH
+DEFS += -D_HDCP_IN_FLASH
+endif
+
+ifdef _SFU_TEST_SUPPORT
+DEFS += -D_SFU_TEST_SUPPORT
+endif
+ifdef _MPEG4_SUPPORT
+DEFS += -D_MPEG4_SUPPORT
+endif
+
+ifdef _M36F_SINGLE_CPU
+DEFS += -D_M36F_SINGLE_CPU
+endif
+
+ifdef _SATA_SUPPORT
+DEFS += -D_SATA_SUPPORT
+endif
+
+ifdef _OPENSSL_ENABLE
+DEFS += -D_OPENSSL_ENABLE
+endif
+
+LIB = -L${CC_DIR}/lib/gcc/mips-sde-elf/4.3.3/el/sof \
+      -L${CC_DIR}/mips-sde-elf/lib/el/sof
+
+AS = ${CCBIN_DIR}/${CCTOOL}gcc
+CC = ${CCBIN_DIR}/${CCTOOL}gcc
+LD = ${CCBIN_DIR}/${CCTOOL}ld
+OBJDUMP = ${CCBIN_DIR}/${CCTOOL}objdump
+OBJCOPY = ${CCBIN_DIR}/${CCTOOL}objcopy
+AR = ${CCBIN_DIR}/${CCTOOL}ar
+STRIP = ${CCBIN_DIR}/${CCTOOL}strip
+
+DEFS += -D_STRIP_PLUGIN_OUTPUT
+
+CFLAGS = -g -EL -mips2 -O1 -msoft-float -fsigned-char -W ${DEFS} -I${INC_DIR} \
+      -I${CC_DIR}/lib/gcc/mips-sde-elf/4.3.3/include \
+      -I${CC_DIR}/mips-sde-elf/include
+
+C32FLAGS = -g -EL -mips2 -O1 -msoft-float -fsigned-char -W ${DEFS} -I${INC_DIR} \
+      -I${CC_DIR}/lib/gcc/mips-sde-elf/4.3.3/include \
+      -I${CC_DIR}/mips-sde-elf/include
+
+
+ASFLAGS = -g -EL -c -mips2 -O1 -W ${DEFS} -I${INC_DIR}
+
+# Global switchs for linker
+#   __BOOT_FROM_FLASH: Current application boot from FLASH by itself.
+#        =0: Boot from SDRAM;  =1: Boot from FLASH by itself.
+#   __BOOT_LOADER: Current application use boot loader boot from FLASH.
+#        =0: Without boot loader;  =1: With boot loader;
+LDFLAGS = -g -EL -O1 -defsym __BOOT_FROM_FLASH=0 -defsym __BOOT_LOADER=0 
+
+DEFS += -DDUAL_ENABLE -DSEE_CPU -DSUPPORT_LINUX
+DUAL_ENABLE = 1
+SEE_CPU = 1
+SUPPORT_LINUX = 1
+LDFLAGS += -defsym __SEE_START_ADDR=0x84000200

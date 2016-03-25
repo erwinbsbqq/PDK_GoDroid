@@ -1,0 +1,43 @@
+<html>
+<body>
+<pre>
+<h1>µVision2 Build Log</h1>
+<h2>Project:</h2>
+D:\PMU_MCU_PRJ\PMU_MCU_PRJ\mcu_src\PDK_PMU_MCU.uv2
+Project File Date:  10/26/2014
+
+<h2>Output:</h2>
+Build target 'Target 1'
+assembling STARTUP.A51...
+compiling ir.c...
+sys.h(90): warning C322: unknown identifier
+compiling main.c...
+sys.h(90): warning C322: unknown identifier
+compiling pannel.c...
+sys.h(90): warning C322: unknown identifier
+pannel.c(9): warning C322: unknown identifier
+pannel.c(12): warning C322: unknown identifier
+compiling pmu_rtc.c...
+sys.h(90): warning C322: unknown identifier
+compiling sys.c...
+sys.h(90): warning C322: unknown identifier
+SYS.C(86): warning C235: parameter 1: different types
+SYS.C(112): warning C235: parameter 1: different types
+SYS.C(127): warning C235: parameter 1: different types
+SYS.C(127): warning C235: parameter 2: different types
+SYS.C(139): warning C235: parameter 1: different types
+SYS.C(139): warning C235: parameter 2: different types
+compiling uart.c...
+sys.h(90): warning C322: unknown identifier
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_POWER_KEY_PROCESS?MAIN
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_DELAY?PANNEL
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_DEBUG_DELAY?SYS
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_ALI_POWER_KEY_PROCESS?SYS
+Program Size: data=9.0 xdata=1713 code=12946
+creating hex file from "PDK_PMU_MCU"...
+"PDK_PMU_MCU" - 0 Error(s), 18 Warning(s).

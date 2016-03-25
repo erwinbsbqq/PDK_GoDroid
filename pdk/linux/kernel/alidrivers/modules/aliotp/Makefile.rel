@@ -1,0 +1,8 @@
+#
+#Makefile for ali soc dirver
+#
+obj-y += aliotp.o
+
+#aliotp-y := ali_otp.o 
+#aliotp-$(CONFIG_ALI_OTP) += otp_m37.o
+

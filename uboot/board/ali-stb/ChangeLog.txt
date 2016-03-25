@@ -1,0 +1,95 @@
+LABEL: u-boot_C3701C_RELEASE_20120910
+date:  2012-9-10 14:17:30
+
+1. Set default CROSS_COMPILE=/opt/mips-4.4/bin/mips-linux-gnu-
+ (Shanghai linux server and Zhuhai SCT server set to this.)
+2. Change filetype to xtext (set exec bit) for following files:
+  build.sh, release.sh, mkconfig, tools/scripts/make-asm-offsets
+3. add prompt message "Please ensure you already select Nand/Nor flash and other setting correctly in board/ali-stb/ali-stb.h,otherwize the customer will build failure if he change these setting (Y/n)"
+
+
+------------------------------------------------------------------------------------
+LABEL: u-boot_C3701C_RELEASE_20120831
+date:  2012-8-31 18:04:08
+
+1. Add nor flash support for C3701C u-boot
+
+------------------------------------------------------------------------------------
+
+LABEL: u-boot_C3701H_NAND_20120831
+date:  2012-8-31 18:01:37
+
+1. Use name to read/write a partition instead of PartIdx.
+2. Leave the fist argument as 0 when pass arguments from u-boot & Ali-boot to kernel according to ZhangHong's suggestion.
+
+------------------------------------------------------------------------------------
+
+LABEL: u-boot201204_C3701H_20120824
+date:  2012-8-24 16:52:06
+
+1. Fix a nand write bug: 64 bytes is writen as 0xFF after 0x20000 bytes is writen.This result in a bug: the .UBO header verify failure.
+2. Better output for 'nand dump' command.
+3. enable "reset" command.
+4. pass command line arguments from u-boot to kernel.
+  (rootfs partition and mac address)
+5. Add release.sh script.
+6. Change the entry address from Aliboot to u-boot to 0xa3000200 per ZhangHong's design document.
+7. add Guide.txt
+
+
+------------------------------------------------------------------------------------
+2012-08-17 U-boot_20120401 first release.
+
+A. New added commands:
+
+  1. pmi info				//show Product Module Information.
+  2. part show			//show Nand partitions list which is stored in PMI.
+     part load			//Load a partition to a specified RAM address.
+     part update    //Erase and write the partition from the specified RAM address.
+  3. stbid show			//show Mac address,Serial number,OUI and HW version stored in the 'stbid' partition.
+     stbid set_mac	//set a new mac address. The new mac address must be valid, otherwize will refuse the modification.
+     stbid set_sn		//set the board serial number
+  4. boot_ali				//Load the kernel and see code to execute.
+
+B. Other often used commands.
+
+  1.tftpboot					//Load a code to SDRAM by tftp protocal,but don't start to execute. so name it 'tftp' may be better to understand.
+  2.go 								//Start to execute from the specified address.
+  3.bootm							//The command will check the (.UBO) header validation,then start to execute it after the header.
+                      //The command also can pass some arguments to kernel (Linux).
+  4.printenv					//print the current enviroment variable setting.
+  5.setenv						//set/modify the enviroment variable value.
+  6.ping							//check the network is connected or not. Maybe you should use 'eth up' command to turn on ethernet function.
+  7.nand bad					//show bad blocks in the Nand flash.
+  8.md								//display memory content in the specified address.
+  9.help							//list the supported commands,or print the usage of the specified command.
+  
+C. TO-DO items:
+
+DONE   1. pass some arguments to Linux. (Need to check with Lorin/other,what parameters are needed to pass?)
+DONE  2. create release script: Ali's USB/MAC/Nand driver code (including this ChangeLog.txt file) is not open to our customer.
+   3. boot application selection: Kernal or OTA loader?
+DONE  4. enable user change the MAC/IP/Gateway/Netmask address to fit the different work enviroment.
+   5. Too many warning error in ali's specified source code, I will try  to remove it.
+   6. system crash when set memory size to 256M in 256M board. (Set to 128/192M is okay.)
+   7. whether the u-boot enviroment varible need be saved? Eg. User-defined Mac addres/network parameters. if yes, where to save, Flash data area
+     or OOB area?
+DONE  8. USB boot function.
+DONE   9. Currently the partition name is NULL, if new MPTool can write the real partition name to PMI area, I will modified my code to get the 
+      kernel/see/ota loader partition number by name.
+DONE   12. tftp 80100000 main_bin.ubo;part update 6 80100000 len, then "CRC verify error" (nand write verify fail (-5))
+DONE  13 USB fatload timeout
+DONE   14 Nor flash load kernel/See code
+   10. u-boot porting for 3921 SOC based on ARM.
+   11. other bugfix.
+
+D. Why I suggest to use the latest u-boot version. (2012.04.01)
+
+  1. The original u-boot from Chuhua.tang is 1.1.6, which was released in 2006. It seems a little too old.
+     Moreover, I ever compared the verison with the official 1.1.6 version, there are too more useless files in it.
+  2. When David Shih send me the USB (EHCI) driver to me, his u-boot version is based on u-boot 2011.09. The version had much better 
+     architecture,more like Linux kernel. It support more mips/ARM chips. The change (compare with official 2011.09 version) is much less 
+     than the original 1.1.6. We can understand the the changes more easily.
+     (The newer u-boot use a release date as its version number,not the tranditional verison number.)
+  3. SCT team's target is to provide a unified core code to all BU in the future. I think we should have a far viewpoint, so we should use 
+     a better u-boot version as our base. (Generally speaking, Newer means better quality.)

@@ -1,0 +1,1287 @@
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 1   
+
+
+C51 COMPILER V7.06, COMPILATION OF MODULE IR
+OBJECT MODULE PLACED IN ir.OBJ
+COMPILER INVOKED BY: D:\SW_Install\C51\BIN\C51.EXE ir.c LARGE BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          /****************************************************************************
+   2           *
+   3           *  ALi (Shanghai) Corporation, All Rights Reserved. 2008 Copyright (C)
+   4           *
+   5           *  File: irc_std.c
+   6           *
+   7           *  Description: This file implements Infra Receiver common
+   8           *               driver function library.
+   9           *  History:
+  10           *      Date        Author      Version  Comment
+  11           *      ====        ======      =======  =======
+  12           *  1.  2009.5.22       Trueve Hu       0.1.000  Create file.
+  13           *  2.  2013.1.8    Richard     0.2.000  Modify
+  14           *  3.  2013.6.25   Mike        0.3.000  Modify
+  15           ****************************************************************************/
+  16          
+  17          #include <dp8051xp.h>
+  18          #include <stdio.h>
+  19          #include "ir.h"
+*** WARNING C322 IN LINE 90 OF sys.h: unknown identifier
+  20          #include "sys.h"
+  21          
+  22          //============================================================//
+  23          #define IR_BUF_LEN                                    256
+  24          #define CLK_CYC_US                                   16 /* Work clock cycle, in uS */   //===>>>16
+  25          #define TIMEOUT_US                                   24000 /* Timeout threshold, in uS */
+  26          #define NOISETHR_US                                  80 /* Noise threshold, in uS */
+  27          
+  28          #define PAN_KEY_INVALID                        0xFFFFFFFF
+  29          #define PULSE_LOW                                          ((unsigned short)0x00 << 15)
+  30          #define PULSE_HIGH                                         ((unsigned short)0x01 << 15)
+  31          #define PULSE_POL(x)                                      (x & ((unsigned short)0x01 << 15))
+  32          #define PULSE_VALUE(x)                             (x & (~((unsigned short)0x01 << 15)))
+  33          #define INRANGE(x, value, tol)                       ((x) > ((value)-(tol)) && (x) < ((value)+(tol)))
+  34          #define IRP_CNT                                          8 //(sizeof(irc_decoders) / sizeof(struct irc_decoder))
+  35          #define COPY_CODE(dst, src)                          do {int i; for(i=0;i<16;i++) *((UINT8 *)dst+i) = *((UINT8 *)src+
+             -i);} while(0)
+  36          #define CLEAR_CODE(p)                                do {int i; for(i=0;i<16;i++) *((UINT8 *)p+i) = 0;} while(0)
+  37          
+  38          //============================================================//
+  39          extern unsigned long xdata  g_ir_power_key[8];
+  40          UINT8 key_cnt;
+  41          unsigned char bufferin = 0;
+  42          unsigned char bufferout = 0;
+  43          unsigned char ir_buffer[IR_BUF_LEN];
+  44          IR_KEY g_set_ir_key;
+  45          UINT8 g_ir_flag = 0; //modify for test
+  46          
+  47          static void reverse_code_bit(UINT32 *ir_code, UINT32 bit_cnt);
+  48          static void reverse_code_byte(UINT32 *ir_code, UINT8 bit_cnt);
+  49          static UINT32 irc_decode(struct irc_decoder *ird, UINT32 pulse_width, UINT32 pulse_polarity);
+  50          UINT32 irc_pulse_to_code(UINT32 pulse_width, UINT32 pulse_polarity);
+  51          void IR_GenerateCode(void);
+  52          void IR_ISR(void);      
+  53          void IR_Init(void);
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 2   
+
+  54          
+  55          //============================================================//
+  56          enum irc_decode_ret
+  57          {
+  58                  IRC_DECODE_SUCCEED,
+  59                  IRC_DECODE_DATA0,
+  60                  IRC_DECODE_DATA1,
+  61                  IRC_DECODE_FAIL,
+  62                  IRC_DECODE_STOP
+  63          };
+  64          
+  65          enum irp_type
+  66          {
+  67                  IR_TYPE_NEC=0,
+  68                  IR_TYPE_LAB,
+  69                  IR_TYPE_50560,
+  70                  IR_TYPE_KF,
+  71                  IR_TYPE_LOGIC,
+  72                  IR_TYPE_SRC,
+  73                  IR_TYPE_NSE,
+  74                  IR_TYPE_RC5,
+  75                  IR_TYPE_RC5_X
+  76          };
+  77          
+  78          static const char *irp_strs[] = 
+  79          {
+  80                  "nec",
+  81                  "lab",
+  82                  "50560",
+  83                  "kf",
+  84                  "logic",
+  85                  "src",
+  86                  "nse",
+  87                  "rc5",
+  88                  "rc5_x",
+  89          
+  90          };
+  91          
+  92          enum ir_waveform
+  93          {
+  94                  IR_LEADING=0,
+  95                  IR_SPECIAL,
+  96                  IR_DATA,
+  97                  IR_REPEAT_LEADING,
+  98                  IR_REPEAT_DATA,
+  99                  IR_STOP,
+ 100                  IR_END,
+ 101                  IR_NULL
+ 102          };
+ 103          
+ 104          struct irc_pulse
+ 105          {
+ 106                  UINT8 type;
+ 107                  UINT16 fst_half;
+ 108                  UINT16 scd_half;
+ 109                  UINT16 tolerance;
+ 110          };
+ 111          
+ 112          struct ir_attr
+ 113          {
+ 114                  UINT8 type;
+ 115                  UINT8 bit_msb_first     : 1;
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 3   
+
+ 116                  UINT8 byte_msb_first    : 1;
+ 117                  UINT8 pulse_invert              : 1;
+ 118                  UINT8 repeat_enable     : 1;
+ 119                  UINT8 ignore_lastpulse  : 1;
+ 120                  UINT8 pulse_prec;
+ 121                  UINT8 pulse_max_width;
+ 122                  struct irc_pulse pulse[7];
+ 123                  enum ir_waveform *normal;
+ 124                  enum ir_waveform *repeat;
+ 125          };
+ 126          
+ 127          struct irc_decoder
+ 128          {
+ 129                  struct ir_attr *attr;
+ 130                  UINT8 first_half_got;
+ 131                  UINT8 decode_step;
+ 132                  UINT8 key_bit_cnt;
+ 133                  UINT16 last_pulse_width;
+ 134                  UINT32 key_code[4];
+ 135                  UINT32 last_key_code[4];
+ 136          };
+ 137          
+ 138          static enum ir_waveform ir_nec_normal[] = 
+ 139          {
+ 140                  IR_LEADING,                                              // start bit
+ 141                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,  //8 bits command 
+ 142                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 143                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,   //8 bits address
+ 144                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 145                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,  //8 bits ~command 
+ 146                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 147                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,  //8 bits ~address
+ 148                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 149                  IR_END, 
+ 150          };
+ 151          
+ 152          static enum ir_waveform ir_nec_repeat[] = 
+ 153          {
+ 154                  IR_REPEAT_LEADING, 
+ 155                  IR_END, 
+ 156          };
+ 157          
+ 158          static struct ir_attr ir_attr_nec = 
+ 159          {
+ 160                  IR_TYPE_NEC,
+ 161                  1,
+ 162                  0,
+ 163                  0,
+ 164                  1,
+ 165                  0,
+ 166                  280,
+ 167                  15000,
+ 168                  {
+ 169                          {IR_LEADING, PULSE_LOW | 9000, PULSE_HIGH | 4500, 500}, // start pulse
+ 170                          {IR_NULL, 0, 0, 0},
+ 171                          {IR_DATA, PULSE_LOW | 560, PULSE_HIGH | 560, 200},  //logic '0'
+ 172                          {IR_DATA, PULSE_LOW | 560, PULSE_HIGH | 1680, 300},  // logic '1'
+ 173                          {IR_REPEAT_LEADING, PULSE_LOW | 9000, PULSE_HIGH | 2250, 500},
+ 174                          {IR_REPEAT_DATA, PULSE_LOW | 560, PULSE_HIGH | 20000, 1000},
+ 175                          {IR_STOP, PULSE_LOW | 500, PULSE_HIGH | 15000, 1000}, 
+ 176                  },
+ 177                  ir_nec_normal, 
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 4   
+
+ 178                  ir_nec_repeat, 
+ 179          };
+ 180          
+ 181          static enum ir_waveform ir_lab[] = 
+ 182          {
+ 183                  IR_LEADING, 
+ 184                  IR_SPECIAL, 
+ 185                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,
+ 186                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 187                  IR_DATA,
+ 188                  IR_END, 
+ 189          };
+ 190          
+ 191          static struct ir_attr ir_attr_lab = 
+ 192          {
+ 193                  IR_TYPE_LAB,
+ 194                  1,
+ 195                  0,
+ 196                  0,
+ 197                  0,
+ 198                  0,
+ 199                  140,
+ 200                  15000,
+ 201                  {
+ 202                          {IR_LEADING, PULSE_LOW | 280, PULSE_HIGH | 7300, 140},
+ 203                          {IR_SPECIAL, PULSE_LOW | 280, PULSE_HIGH | 6150, 1500},
+ 204                          {IR_DATA, PULSE_LOW | 280, PULSE_HIGH | 4780, 500},
+ 205                          {IR_DATA, PULSE_LOW | 280, PULSE_HIGH | 7300, 500},
+ 206                          {IR_NULL, 0, 0, 0},
+ 207                          {IR_NULL, 0, 0, 0},
+ 208                          {IR_STOP, PULSE_LOW | 500, PULSE_HIGH | 15000, 1000}, 
+ 209                  },
+ 210                  ir_lab, 
+ 211                  NULL, 
+ 212          };
+ 213          
+ 214          static enum ir_waveform ir_50560[] = 
+ 215          {
+ 216                  IR_LEADING, 
+ 217                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,
+ 218                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 219                  IR_SPECIAL,
+ 220                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,
+ 221                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 222                  IR_SPECIAL,
+ 223                  IR_END, 
+ 224          };
+ 225          
+ 226          static struct ir_attr ir_attr_50560 = 
+ 227          {
+ 228                  IR_TYPE_50560,
+ 229                  1,
+ 230                  0,
+ 231                  0,
+ 232                  1,
+ 233                  0,
+ 234                  260,
+ 235                  15000,
+ 236                  {
+ 237                          {IR_LEADING, PULSE_LOW | 8400, PULSE_HIGH | 4200, 500},
+ 238                          {IR_SPECIAL, PULSE_LOW | 520, PULSE_HIGH | 4200, 500},
+ 239                          {IR_DATA, PULSE_LOW | 520, PULSE_HIGH | 1050, 500},
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 5   
+
+ 240                          {IR_DATA, PULSE_LOW | 520, PULSE_HIGH | 2100, 500},
+ 241                          {IR_NULL, 0, 0, 0},
+ 242                          {IR_NULL, 0, 0, 0},
+ 243                          {IR_STOP, PULSE_LOW | 500, PULSE_HIGH | 15000, 1000}, 
+ 244                  },
+ 245                  ir_50560, 
+ 246                  NULL, 
+ 247          };
+ 248          
+ 249          static enum ir_waveform ir_kf[] = 
+ 250          {
+ 251                  IR_LEADING, 
+ 252                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,  
+ 253                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 254                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 255                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,  
+ 256                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 257                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 258                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,  
+ 259                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 260                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 261                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,  
+ 262                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 263                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 264                  IR_END, 
+ 265          };
+ 266          
+ 267          static struct ir_attr ir_attr_kf = 
+ 268          {
+ 269                  IR_TYPE_KF,
+ 270                  0,
+ 271                  1,
+ 272                  0,
+ 273                  0,
+ 274                  0,
+ 275                  190,
+ 276                  20000,
+ 277                  {
+ 278                          {IR_LEADING, PULSE_LOW | 3640, PULSE_HIGH | 1800, 500},
+ 279                          {IR_NULL, 0, 0, 0},
+ 280                          {IR_DATA, PULSE_LOW | 380, PULSE_HIGH | 380, 150},
+ 281                          {IR_DATA, PULSE_LOW | 380, PULSE_HIGH | 1350, 300},
+ 282                          {IR_NULL, 0, 0, 0},
+ 283                          {IR_NULL, 0, 0, 0},
+ 284                          {IR_STOP, PULSE_LOW | 500, PULSE_HIGH | 20000, 1000}, 
+ 285                  },
+ 286                  ir_kf, 
+ 287                  NULL, 
+ 288          };
+ 289          
+ 290          static enum ir_waveform ir_logic[] = 
+ 291          {
+ 292                  IR_LEADING, 
+ 293                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,  
+ 294                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 295                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 296                  IR_END, 
+ 297          };
+ 298          
+ 299          static struct ir_attr ir_attr_logic = 
+ 300          {
+ 301                  IR_TYPE_LOGIC,
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 6   
+
+ 302                  0,
+ 303                  0,
+ 304                  0,
+ 305                  0,
+ 306                  0,
+ 307                  125, 
+ 308                  20000,
+ 309                  {
+ 310                          {IR_LEADING, PULSE_LOW | 5000, PULSE_HIGH | 5000, 500},
+ 311                          {IR_NULL, 0, 0, 0},
+ 312                          {IR_DATA, PULSE_LOW | 250, PULSE_HIGH | 500, 100},
+ 313                          {IR_DATA, PULSE_LOW | 500, PULSE_HIGH | 1000, 200},
+ 314                          {IR_NULL, 0, 0, 0},
+ 315                          {IR_NULL, 0, 0, 0},
+ 316                          {IR_STOP, PULSE_LOW | 500, PULSE_HIGH | 20000, 1000}, 
+ 317                  },
+ 318                  ir_logic, 
+ 319                  NULL, 
+ 320          };
+ 321          
+ 322          static enum ir_waveform ir_src_normal[] = 
+ 323          {
+ 324                  IR_LEADING, 
+ 325                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,
+ 326                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 327                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 328                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 329                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 330                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 331                  IR_SPECIAL, 
+ 332                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 333                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 334                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 335                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 336                  IR_END, 
+ 337          };
+ 338          
+ 339          static struct ir_attr ir_attr_src = 
+ 340          {
+ 341                  IR_TYPE_SRC,
+ 342                  1,
+ 343                  0,
+ 344                  0,
+ 345                  1,
+ 346                  0,
+ 347                  280,
+ 348                  60000,
+ 349                  {
+ 350                          {IR_LEADING, PULSE_LOW | 6000, PULSE_HIGH | 2000, 400},
+ 351                          {IR_SPECIAL, PULSE_LOW | 3640, PULSE_HIGH | 3640, 400},
+ 352                          {IR_DATA, PULSE_LOW | 560, PULSE_HIGH | 560, 200},
+ 353                          {IR_DATA, PULSE_LOW | 560, PULSE_HIGH | 1120, 300},
+ 354                          {IR_NULL, 0, 0, 0},
+ 355                          {IR_NULL, 0, 0, 0},
+ 356                          {IR_STOP, PULSE_LOW | 560, PULSE_HIGH | 20000, 1000}, 
+ 357                  },
+ 358                  ir_src_normal, 
+ 359                  NULL, 
+ 360          };
+ 361          
+ 362          static enum ir_waveform ir_nse_normal[] = 
+ 363          {
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 7   
+
+ 364                  IR_LEADING, 
+ 365                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,
+ 366                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 367                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 368                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 369                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 370                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 371                  IR_LEADING, 
+ 372                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 373                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 374                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 375                  IR_DATA, IR_DATA, IR_DATA, IR_DATA, 
+ 376                  IR_END, 
+ 377          };
+ 378          
+ 379          static enum ir_waveform ir_nse_repeat[] = 
+ 380          {
+ 381                  IR_REPEAT_LEADING, 
+ 382                  IR_END, 
+ 383          };
+ 384          
+ 385          static struct ir_attr ir_attr_nse = 
+ 386          {
+ 387                  IR_TYPE_NSE,
+ 388                  1,
+ 389                  0,
+ 390                  0,
+ 391                  1,
+ 392                  0,
+ 393                  280,
+ 394                  60000,
+ 395                  {
+ 396                          {IR_LEADING, PULSE_LOW | 3640, PULSE_HIGH | 1800, 400},
+ 397                          {IR_NULL, 0, 0, 0},
+ 398                          {IR_DATA, PULSE_LOW | 560, PULSE_HIGH | 560, 200},
+ 399                          {IR_DATA, PULSE_LOW | 560, PULSE_HIGH | 1120, 300},
+ 400                          {IR_REPEAT_LEADING, PULSE_LOW | 3640, PULSE_HIGH | 3640, 500},
+ 401                          {IR_REPEAT_DATA, PULSE_LOW | 560, PULSE_HIGH | 20000, 1000},
+ 402                          {IR_STOP, PULSE_LOW | 560, PULSE_HIGH | 20000, 1000},
+ 403                  },
+ 404                  ir_nse_normal, 
+ 405                  ir_nse_repeat, 
+ 406          };
+ 407          
+ 408          static enum ir_waveform ir_rc5[] = 
+ 409          {
+ 410                  IR_LEADING, IR_LEADING,   //S1 & S2 bit
+ 411                  IR_SPECIAL,                       //toggle bit
+ 412                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,  // 5 bits addr & 6 bits command
+ 413                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,
+ 414                  IR_DATA, IR_DATA, IR_DATA,
+ 415                  IR_END,                  // ???
+ 416          };
+ 417          
+ 418          static struct ir_attr ir_attr_rc5 = 
+ 419          {
+ 420                  IR_TYPE_RC5,  // type name
+ 421                  1,                      //bits MSB
+ 422                  0,                      
+ 423                  0,
+ 424                  0,
+ 425                  1,                      // repeat enable 
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 8   
+
+ 426                  200,                    //pulse prec
+ 427                  15000,          // pulse max width 
+ 428                  {
+ 429                          {IR_LEADING, PULSE_HIGH | 830, PULSE_LOW | 830, 200}, // leading logic 
+ 430                          {IR_SPECIAL, PULSE_HIGH | 830, PULSE_LOW | 830, 200},  // toggle logic 
+ 431                          {IR_DATA, PULSE_LOW | 830, PULSE_HIGH | 830, 200},         // data logic '0'
+ 432                          {IR_DATA, PULSE_HIGH | 830, PULSE_LOW | 830, 200},    // data logic '1'
+ 433                          {IR_NULL, 0, 0, 0},
+ 434                          {IR_NULL, 0, 0, 0},
+ 435                          {IR_STOP, PULSE_HIGH | 830, PULSE_LOW | 15000, 1000}, 
+ 436                  },
+ 437                  ir_rc5, 
+ 438                  NULL, 
+ 439          };
+ 440          
+ 441          static enum ir_waveform ir_rc5_x[] = 
+ 442          {
+ 443                  IR_LEADING,
+ 444              IR_DATA,   //S1 & S2 bit
+ 445                  IR_DATA,                         
+ 446                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,  // 5 bits addr & 6 bits command
+ 447                  IR_DATA, IR_DATA, IR_DATA, IR_DATA,
+ 448                  IR_DATA, IR_DATA,
+ 449          };
+ 450          
+ 451          static struct ir_attr ir_attr_rc5_x = 
+ 452          {
+ 453                  IR_TYPE_RC5,  // type name
+ 454                  1,                      //bits MSB
+ 455                  0,                      
+ 456                  0,
+ 457                  0,
+ 458                  1,                      // repeat enable 
+ 459                  200,                    //pulse prec
+ 460                  15000,          // pulse max width 
+ 461                  {
+ 462                          {IR_LEADING, PULSE_HIGH | 830, PULSE_LOW | 830, 200}, // leading logic 
+ 463                          {IR_SPECIAL, PULSE_HIGH | 830, PULSE_LOW | 830, 200},  // toggle logic 
+ 464                          {IR_DATA, PULSE_LOW | 830, PULSE_HIGH | 830, 200},         // data logic '0'
+ 465                          {IR_DATA, PULSE_HIGH | 830, PULSE_LOW | 830, 200},    // data logic '1'
+ 466                          {IR_NULL, 0, 0, 0},
+ 467                          {IR_NULL, 0, 0, 0},
+ 468                          {IR_STOP, PULSE_HIGH | 830, PULSE_LOW | 15000, 1000}, 
+ 469                  },
+ 470                  ir_rc5_x, 
+ 471                  NULL, 
+ 472          };
+ 473          
+ 474          struct irc_decoder irc_decoders_nec = 
+ 475          {
+ 476                  &ir_attr_nec,//.attr = &ir_attr_nec,
+ 477                  0,//.first_half_got = 0,
+ 478                  0,//.decode_step = 0,
+ 479                  0,//.key_bit_cnt = 0,
+ 480                  0,//.last_pulse_width = 0,
+ 481                  {0,},//.key_code = {0,},
+ 482                  {0,},//.last_key_code = {0,},
+ 483          };
+ 484          
+ 485          struct irc_decoder irc_decoders_lab = 
+ 486          {
+ 487                  &ir_attr_lab,//.attr = &ir_attr_lab,
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 9   
+
+ 488                  0,//.first_half_got = 0,
+ 489                  0,//.decode_step = 0,
+ 490                  0,//.key_bit_cnt = 0,
+ 491                  0,//.last_pulse_width = 0,
+ 492                  {0,},//.key_code = {0,},
+ 493                  {0,},//.last_key_code = {0,},
+ 494          };
+ 495          
+ 496          struct irc_decoder irc_decoders_50560 = 
+ 497          {
+ 498                   &ir_attr_50560,//.attr = &ir_attr_50560,
+ 499                  0,//.first_half_got = 0,
+ 500                  0,//.decode_step = 0,
+ 501                  0,//.key_bit_cnt = 0,
+ 502                  0,//.last_pulse_width = 0,
+ 503                  {0,},//.key_code = {0,},
+ 504                  {0,},//.last_key_code = {0,},
+ 505          };
+ 506          
+ 507          struct irc_decoder irc_decoders_kf = 
+ 508          {
+ 509                  &ir_attr_kf,//.attr = &ir_attr_kf,
+ 510                  0,//.first_half_got = 0,
+ 511                  0,//.decode_step = 0,
+ 512                  0,//.key_bit_cnt = 0,
+ 513                  0,//.key_code = {0,},
+ 514                  {0,},//.last_pulse_width = 0,
+ 515                  {0,},//.last_key_code = {0,},
+ 516          };
+ 517          
+ 518          struct irc_decoder irc_decoders_logic = 
+ 519          {
+ 520                  &ir_attr_logic,//.attr = &ir_attr_logic,
+ 521                  0,//.first_half_got = 0,
+ 522                  0,//.decode_step = 0,
+ 523                  0,//.key_bit_cnt = 0,
+ 524                  0,//.last_pulse_width = 0,
+ 525                  {0,},//.key_code = {0,},
+ 526                  {0,},//.last_key_code = {0,},
+ 527          };
+ 528          
+ 529          struct irc_decoder irc_decoders_src = 
+ 530          {
+ 531                  &ir_attr_src,//.attr = &ir_attr_src,
+ 532                  0,//.first_half_got = 0,
+ 533                  0,//.decode_step = 0,
+ 534                  0,//.key_bit_cnt = 0,
+ 535                  0,//.last_pulse_width = 0,
+ 536                  {0,},//.key_code = {0,},
+ 537                  {0,},//.last_key_code = {0,},
+ 538          };
+ 539          
+ 540          struct irc_decoder irc_decoders_nse = 
+ 541          {
+ 542                   &ir_attr_nse,//.attr = &ir_attr_nse,
+ 543                  0,//.first_half_got = 0,
+ 544                  0,//.decode_step = 0,
+ 545                  0,//.key_bit_cnt = 0,
+ 546                  0,//.last_pulse_width = 0,
+ 547                  {0,},//.key_code = {0,},
+ 548                  {0,},//.last_key_code = {0,},
+ 549          };
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 10  
+
+ 550          
+ 551          struct irc_decoder irc_decoders_rc5 = 
+ 552          {
+ 553                  &ir_attr_rc5,//.attr = &ir_attr_rc5,
+ 554                  0,//.first_half_got = 0,
+ 555                  0,//.decode_step = 0,
+ 556                  0,//.key_bit_cnt = 0,
+ 557                  0,//.last_pulse_width = 0,
+ 558                  {0,},//.key_code = {0,},
+ 559                  {0,},//.last_key_code = {0,},
+ 560          };
+ 561          
+ 562          struct irc_decoder irc_decoders_rx5_x = 
+ 563          {
+ 564                  &ir_attr_rc5_x,//.attr = &ir_attr_rc5_x,
+ 565                  0,//.first_half_got = 0,
+ 566                  0,//.decode_step = 0,
+ 567                  0,//.key_bit_cnt = 0,
+ 568                  0,//.last_pulse_width = 0,
+ 569                  {0,},//.key_code = {0,},
+ 570                  {0,},//.last_key_code = {0,},
+ 571          };
+ 572          
+ 573          static struct irc_decoder *irc_decoders[]=
+ 574          {
+ 575                  &irc_decoders_nec,
+ 576                  &irc_decoders_lab,
+ 577                  &irc_decoders_50560,
+ 578                  &irc_decoders_kf,
+ 579                  &irc_decoders_logic,
+ 580                  &irc_decoders_src,
+ 581                  &irc_decoders_nse,
+ 582                  &irc_decoders_rc5,
+ 583                  &irc_decoders_rx5_x,
+ 584          };
+ 585          
+ 586          //============================================================//
+ 587          static void reverse_code_bit(UINT32 *ir_code, UINT32 bit_cnt)
+ 588          {
+ 589   1              UINT8 i;
+ 590   1              UINT32 src_code[4] = {0,};
+ 591   1              UINT32 dst_code[4] = {0,};
+ 592   1              
+ 593   1              COPY_CODE(src_code, ir_code);
+ 594   1              for (i=0; i<bit_cnt; i++)
+ 595   1              {
+ 596   2                      if (src_code[i / 32] & ((unsigned long)0x01L << (i % 32)))
+ 597   2                      {
+ 598   3                              dst_code[(bit_cnt - 1 - i) / 32] |= (unsigned long)0x01L << ((bit_cnt - 1 - i) % 32);
+ 599   3                      }
+ 600   2              }
+ 601   1              
+ 602   1              COPY_CODE(ir_code, dst_code);
+ 603   1      }
+ 604          
+ 605          static void reverse_code_byte(UINT32 *ir_code, UINT8 bit_cnt)
+ 606          {
+ 607   1              UINT8 i;
+ 608   1              UINT8 src_code[16] = {0,};
+ 609   1              UINT8 dst_code[16] = {0,};
+ 610   1              UINT8 byte_cnt = (bit_cnt  + 7) / 8;
+ 611   1      
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 11  
+
+ 612   1              //sample
+ 613   1              //src:   58 59 4e 48 00 00 57 50
+ 614   1              //mips: 48 4e 59 58 50 57 00 00
+ 615   1              //rev:   57 50 58 59 4e 48 00 00
+ 616   1              //dst:    59 58 50 57 00 00 4e 48
+ 617   1      
+ 618   1              COPY_CODE(src_code, ir_code);
+ 619   1      
+ 620   1              dst_code[0] = src_code[3];
+ 621   1              dst_code[1] = src_code[2];
+ 622   1              dst_code[2] = src_code[1];
+ 623   1              dst_code[3] = src_code[0];
+ 624   1              
+ 625   1              dst_code[4] = src_code[7];
+ 626   1              dst_code[5] = src_code[6];
+ 627   1              dst_code[6] = src_code[5];
+ 628   1              dst_code[7] = src_code[4];
+ 629   1              
+ 630   1              dst_code[8] = src_code[11];
+ 631   1              dst_code[9] = src_code[10];
+ 632   1              dst_code[10] = src_code[9];
+ 633   1              dst_code[11] = src_code[8];
+ 634   1              
+ 635   1              dst_code[12] = src_code[15];
+ 636   1              dst_code[13] = src_code[14];
+ 637   1              dst_code[14] = src_code[13];
+ 638   1              dst_code[15] = src_code[12];
+ 639   1              
+ 640   1      
+ 641   1              COPY_CODE(src_code, dst_code);
+ 642   1              for (i=0; i<byte_cnt; i++)
+ 643   1              {
+ 644   2                      dst_code[i] = src_code[byte_cnt - i - 1];
+ 645   2              }
+ 646   1              
+ 647   1              src_code[0] = dst_code[3];
+ 648   1              src_code[1] = dst_code[2];
+ 649   1              src_code[2] = dst_code[1];
+ 650   1              src_code[3] = dst_code[0];
+ 651   1              
+ 652   1              src_code[4] = dst_code[7];
+ 653   1              src_code[5] = dst_code[6];
+ 654   1              src_code[6] = dst_code[5];
+ 655   1              src_code[7] = dst_code[4];
+ 656   1              
+ 657   1              src_code[8] = dst_code[11];
+ 658   1              src_code[9] = dst_code[10];
+ 659   1              src_code[10] = dst_code[9];
+ 660   1              src_code[11] = dst_code[8];
+ 661   1              
+ 662   1              src_code[12] = dst_code[15];
+ 663   1              src_code[13] = dst_code[14];
+ 664   1              src_code[14] = dst_code[13];
+ 665   1              src_code[15] = dst_code[12];
+ 666   1          
+ 667   1              COPY_CODE(ir_code, src_code);
+ 668   1      }
+ 669          
+ 670          /*****************************************************************************
+ 671           * UINT32 irc_decode(UINT32 pulse_width)
+ 672           * Description: Translate pulse width to IR code
+ 673           *
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 12  
+
+ 674           * Arguments:
+ 675           *        struct irc_decoder *ird       : IR decode structure
+ 676           *    UINT32 pulse_width                : Input pulse width, in uS
+ 677           *    UINT32 pulse_polarity             : Input pulse polarity, 
+ 678           *                                                                      '1' = high level, '0' = low level
+ 679           *
+ 680           * Return Value:
+ 681           *    INT32                                             : Key code
+ 682           ****************************************************************************/
+ 683           static UINT32 irc_decode(struct irc_decoder *ird, UINT32 pulse_width, UINT32 pulse_polarity)
+ 684          {
+ 685   1              UINT32 accum_pulse_width = 0;
+ 686   1              enum irc_decode_ret result = IRC_DECODE_FAIL;
+ 687   1              enum ir_waveform step ;
+ 688   1              enum ir_waveform next_step;     
+ 689   1              UINT32 last_key ;
+ 690   1              UINT16 step_temp;       
+ 691   1              UINT32 accum_pulse;
+ 692   1              UINT32 tolerance_pulse;
+ 693   1              UINT32 same_polarity;                           
+ 694   1              UINT32 accum_pulse_1;
+ 695   1              UINT32 tolerance_pulse_1;
+ 696   1              UINT32 same_polarity_1; 
+ 697   1              unsigned long temp_long = 0x5a5a55aa;
+ 698   1      
+ 699   1              /* Ignore burr pulses */
+ 700   1              if (pulse_width < ird->attr->pulse_prec)
+ 701   1              {
+ 702   2                      ird->first_half_got = 0;
+ 703   2                      return PAN_KEY_INVALID;
+ 704   2              }
+ 705   1      
+ 706   1              if (ird->first_half_got == 0)     /* first_half_got is flag  for dule-pulse senser */
+ 707   1              {
+ 708   2                      if (ird->decode_step == 0) /*just check leading pulse*/
+ 709   2                      {
+ 710   3                              UINT32 half_pol;
+ 711   3                              UINT32 half_width;
+ 712   3                              if (PULSE_POL(ird->attr->pulse[0].fst_half)) /* if leading start with high level */
+ 713   3                              {
+ 714   4                                      half_pol = PULSE_POL(ird->attr->pulse[0].scd_half);
+ 715   4                                      half_width = PULSE_VALUE(ird->attr->pulse[0].scd_half);
+ 716   4                              }
+ 717   3                              else
+ 718   3                              {
+ 719   4                                      half_pol = PULSE_POL(ird->attr->pulse[0].fst_half);
+ 720   4                                      half_width = PULSE_VALUE(ird->attr->pulse[0].fst_half);
+ 721   4                              }
+ 722   3      
+ 723   3                              /* Check leading code first half pulse polarity */
+ 724   3                              if (half_pol ^ (pulse_polarity << 15))
+ 725   3                              {
+ 726   4                                      #ifdef IRC_TRACE
+                                              if (ird->attr->type == IRC_TRACE_TYPE)
+                                              #endif
+ 729   4                                      //IRC_DEBUG_PRINTF("Error leading half pulse polarity!\n");
+ 730   4                                      return PAN_KEY_INVALID;
+ 731   4                              }
+ 732   3                              /* Check leading code first half pulse width */
+ 733   3                              if (!INRANGE(pulse_width, half_width, ird->attr->pulse[0].tolerance))
+ 734   3                              {
+ 735   4                                      #ifdef IRC_TRACE
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 13  
+
+                                              if (ird->attr->type == IRC_TRACE_TYPE)
+                                              #endif
+ 738   4                                      //IRC_DEBUG_PRINTF("Leading half pulse not in range!(%d)\n", pulse_width);
+ 739   4                                      return PAN_KEY_INVALID;
+ 740   4                              }
+ 741   3              
+ 742   3                      }
+ 743   2                      ird->first_half_got = 1;
+ 744   2                      ird->last_pulse_width = pulse_width;
+ 745   2      
+ 746   2                      if (ird->decode_step == 0 && (PULSE_POL(ird->attr->pulse[0].fst_half) ? 1 : 0))
+ 747   2                      {
+ 748   3                              ird->first_half_got = 0;
+ 749   3                              ird->last_pulse_width = 0;
+ 750   3                              ird->decode_step++;
+ 751   3                      }
+ 752   2                      return PAN_KEY_INVALID;
+ 753   2              }
+ 754   1              else
+ 755   1              {
+ 756   2                      accum_pulse_width = ird->last_pulse_width + pulse_width;
+ 757   2                      ird->last_pulse_width = 0;
+ 758   2                      ird->first_half_got = 0;
+ 759   2      
+ 760   2                      /* Process normal key */
+ 761   2                      if (ird->attr->normal)
+ 762   2                      {
+ 763   3                              step = ird->attr->normal[ird->decode_step];
+ 764   3                              next_step = ird->attr->normal[ird->decode_step + 1];
+ 765   3                              if (step > IR_DATA)
+ 766   3                              {
+ 767   4                                      step++;
+ 768   4                              }
+ 769   3      
+ 770   3                              accum_pulse = PULSE_VALUE(ird->attr->pulse[step].fst_half) + PULSE_VALUE(ird->attr->pulse[step].scd_hal
+             -f);
+ 771   3                              tolerance_pulse = ird->attr->pulse[step].tolerance;
+ 772   3                              same_polarity = !(PULSE_POL(ird->attr->pulse[step].scd_half) ^ (pulse_polarity << 15));
+ 773   3                                      
+ 774   3                              if (ird->attr->type == IR_TYPE_RC5)
+ 775   3                              {
+ 776   4                                      accum_pulse += PULSE_VALUE(ird->attr->pulse[next_step].fst_half);
+ 777   4                                      tolerance_pulse += PULSE_VALUE(ird->attr->pulse[next_step].fst_half);
+ 778   4                              }
+ 779   3                              
+ 780   3                              if (ird->attr->normal[ird->decode_step] == IR_DATA)
+ 781   3                              {
+ 782   4                                      accum_pulse_1 = PULSE_VALUE(ird->attr->pulse[IR_DATA + 1].fst_half) + PULSE_VALUE(ird->attr->pulse[IR_
+             -DATA + 1].scd_half);
+ 783   4                                      tolerance_pulse_1 = ird->attr->pulse[IR_DATA + 1].tolerance;
+ 784   4                                      same_polarity_1 = !(PULSE_POL(ird->attr->pulse[IR_DATA + 1].scd_half) ^ (pulse_polarity << 15));
+ 785   4                                      
+ 786   4                                      if (ird->attr->type == IR_TYPE_RC5)
+ 787   4                                      {
+ 788   5                                              accum_pulse_1 += PULSE_VALUE(ird->attr->pulse[IR_DATA + 1].fst_half);
+ 789   5                                              tolerance_pulse_1 += PULSE_VALUE(ird->attr->pulse[IR_DATA + 1].fst_half);
+ 790   5                                      }
+ 791   4                                      if (((ird->attr->ignore_lastpulse && ird->attr->normal[ird->decode_step + 1] == IR_END) || \
+ 792   4                                              INRANGE(accum_pulse_width, accum_pulse, tolerance_pulse)) && (same_polarity ? 1 : 0))
+ 793   4                                      {
+ 794   5                                              result = IRC_DECODE_DATA0;
+ 795   5                                      }
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 14  
+
+ 796   4                                      else if (((ird->attr->ignore_lastpulse && ird->attr->normal[ird->decode_step + 1] == IR_END) || \
+ 797   4                                              INRANGE(accum_pulse_width, accum_pulse_1, tolerance_pulse_1)) && (same_polarity_1 ? 1 : 0))
+ 798   4                                      {
+ 799   5                                              result = IRC_DECODE_DATA1;
+ 800   5                                      }
+ 801   4                                      else
+ 802   4                                      {
+ 803   5                                              result = IRC_DECODE_FAIL;
+ 804   5                                      }
+ 805   4                              }
+ 806   3                              else
+ 807   3                              {
+ 808   4                                      if (INRANGE(accum_pulse_width, accum_pulse, tolerance_pulse))
+ 809   4                                      {
+ 810   5                                              if (ird->attr->type == IR_TYPE_RC5 && step == IR_SPECIAL)
+ 811   5                                              {
+ 812   6                                                      result = IRC_DECODE_SUCCEED;
+ 813   6                                              }
+ 814   5                                              else if (same_polarity)
+ 815   5                                              {
+ 816   6                                                      result = IRC_DECODE_SUCCEED;
+ 817   6                                              }
+ 818   5                                              else
+ 819   5                                              {
+ 820   6                                                      result = IRC_DECODE_FAIL;
+ 821   6                                              }
+ 822   5                                      }
+ 823   4                                      else
+ 824   4                                      {
+ 825   5                                              result = IRC_DECODE_FAIL;
+ 826   5                                      }
+ 827   4                              }
+ 828   3                              
+ 829   3                              if (result == IRC_DECODE_SUCCEED || \
+ 830   3                                      result == IRC_DECODE_DATA0 || \
+ 831   3                                      result == IRC_DECODE_DATA1)
+ 832   3                              {
+ 833   4                                      ird->decode_step++;
+ 834   4                                      if (result == IRC_DECODE_DATA0 || \
+ 835   4                                              result == IRC_DECODE_DATA1)
+ 836   4                                      {
+ 837   5                                              //ird->key_code[0]  <<=1;
+ 838   5                                              if (result == IRC_DECODE_DATA1)
+ 839   5                                              {
+ 840   6                                                      ird->key_code[ird->key_bit_cnt / 32] |= (unsigned long)0x01L << (ird->key_bit_cnt % 32);
+ 841   6                                              }
+ 842   5                                              
+ 843   5                                              ird->key_bit_cnt++;
+ 844   5                                      }
+ 845   4                                      
+ 846   4                                      if (ird->attr->type == IR_TYPE_RC5 && INRANGE(accum_pulse_width, accum_pulse, ird->attr->pulse[next_st
+             -ep].tolerance))
+ 847   4                                      {
+ 848   5                                              ird->first_half_got = 1;
+ 849   5                                              ird->last_pulse_width = PULSE_VALUE(ird->attr->pulse[next_step].fst_half);
+ 850   5                                      }
+ 851   4      
+ 852   4                                      /* deal with bit/byte reverse if need at last */
+ 853   4                                      if (ird->attr->normal[ird->decode_step] == IR_END)
+ 854   4                                      {
+ 855   5                                              last_key = PAN_KEY_INVALID;
+ 856   5                                              if (ird->attr->bit_msb_first)
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 15  
+
+ 857   5                                              {
+ 858   6                                                      reverse_code_bit(ird->key_code, ird->key_bit_cnt);
+ 859   6                                              }
+ 860   5                                              if (ird->attr->byte_msb_first)
+ 861   5                                              {
+ 862   6                                                      reverse_code_byte(ird->key_code, ird->key_bit_cnt);
+ 863   6                                              }
+ 864   5                                              
+ 865   5                                              ird->decode_step = 0;
+ 866   5                                              ird->key_bit_cnt = 0;
+ 867   5                                              last_key = ird->last_key_code[0];
+ 868   5                                              COPY_CODE(ird->last_key_code, ird->key_code);
+ 869   5                                              CLEAR_CODE(ird->key_code);
+ 870   5                                              
+ 871   5                                              if (last_key != ird->last_key_code[0] || ird->attr->repeat != NULL)
+ 872   5                                              {
+ 873   6                                                      key_cnt = 0;
+ 874   6                                              }
+ 875   5      
+ 876   5                                              return ird->last_key_code[0];
+ 877   5                                      }
+ 878   4                                      return PAN_KEY_INVALID;
+ 879   4                              }
+ 880   3                              else if (result == IRC_DECODE_FAIL)
+ 881   3                              {
+ 882   4                                      #ifdef IRC_TRACE
+                                              if (ird->attr->type == IRC_TRACE_TYPE)
+                                              #endif
+ 885   4                                      //IRC_DEBUG_PRINTF("decode failed @ step %d!\n", ird->decode_step);
+ 886   4                                      
+ 887   4                                      step_temp = ird->decode_step;
+ 888   4                                      ird->decode_step = 0;
+ 889   4                                      ird->key_bit_cnt = 0;
+ 890   4                                      CLEAR_CODE(ird->key_code);
+ 891   4                                      if (ird->attr->normal[step_temp] != IR_LEADING)
+ 892   4                                      {
+ 893   5                                              return PAN_KEY_INVALID;
+ 894   5                                      }
+ 895   4                              }
+ 896   3                              else
+ 897   3                              {
+ 898   4                                      ird->decode_step = 0;
+ 899   4                                      ird->key_bit_cnt = 0;
+ 900   4                                      CLEAR_CODE(ird->key_code);
+ 901   4                                      return PAN_KEY_INVALID;
+ 902   4                              }
+ 903   3                      }
+ 904   2      
+ 905   2                      /* Process repeat key */
+ 906   2                      if (ird->attr->repeat_enable && ird->attr->repeat)
+ 907   2                      {
+ 908   3                              enum ir_waveform step = ird->attr->repeat[ird->decode_step] + 1;                
+ 909   3                              if (INRANGE(accum_pulse_width, PULSE_VALUE(ird->attr->pulse[step].fst_half) + PULSE_VALUE(ird->attr->pu
+             -lse[step].scd_half), ird->attr->pulse[step].tolerance))
+ 910   3                              {
+ 911   4                                      result = IRC_DECODE_SUCCEED;
+ 912   4                              }
+ 913   3                              else
+ 914   3                              {
+ 915   4                                      result = IRC_DECODE_FAIL;
+ 916   4                              }
+ 917   3                              
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 16  
+
+ 918   3                              if (result == IRC_DECODE_SUCCEED)
+ 919   3                              {
+ 920   4                                      ird->decode_step++;
+ 921   4                                      if (ird->attr->repeat[ird->decode_step] == IR_END)
+ 922   4                                      {
+ 923   5                                              ird->decode_step = 0;
+ 924   5                                              ird->key_bit_cnt = 0;
+ 925   5                                              return ird->last_key_code[0];
+ 926   5                                      }
+ 927   4                                      return PAN_KEY_INVALID;
+ 928   4                              }
+ 929   3                              else if (result == IRC_DECODE_FAIL)
+ 930   3                              {
+ 931   4                                      ird->decode_step = 0;
+ 932   4                                      ird->key_bit_cnt = 0;
+ 933   4                                      CLEAR_CODE(ird->key_code);
+ 934   4                                      return PAN_KEY_INVALID;
+ 935   4                              }
+ 936   3                              else
+ 937   3                              {
+ 938   4                                      ird->decode_step = 0;
+ 939   4                                      ird->key_bit_cnt = 0;
+ 940   4                                      CLEAR_CODE(ird->key_code);
+ 941   4                                      return PAN_KEY_INVALID;
+ 942   4                              }
+ 943   3                      }
+ 944   2                      else
+ 945   2                      {
+ 946   3                              if (accum_pulse_width < ird->attr->pulse_max_width)
+ 947   3                              {
+ 948   4                                      ird->last_pulse_width = accum_pulse_width;
+ 949   4                              }
+ 950   3                              else
+ 951   3                              {
+ 952   4                                      ird->last_pulse_width = 0;
+ 953   4                              }
+ 954   3                              
+ 955   3                              ird->decode_step = 0;
+ 956   3                              ird->key_bit_cnt = 0;
+ 957   3                              CLEAR_CODE(ird->key_code);
+ 958   3                              return PAN_KEY_INVALID;
+ 959   3                      }
+ 960   2              }
+ 961   1      }
+ 962          
+ 963          /*****************************************************************************
+ 964           * UINT32 irc_pulse_to_code(UINT32 pulse_width)
+ 965           * Description: Translate pulse width to IR code
+ 966           *
+ 967           *                     From now on, irc_decode support fellow protocols :  
+ 968           *                              NEC   LAB  50560  KF Logic  SRC  NSE  RC5  RC6_mode1  ----2010.2.11 by ryan.chen
+ 969           * Arguments:
+ 970           *    UINT32 pulse_width        : Input pulse width, in uS
+ 971           *    UINT32 pulse_polarity     : Input pulse polarity, 
+ 972           *                                                              '1' = high level, '0' = low level
+ 973           *
+ 974           * Return Value:
+ 975           *    INT32                             : Key code
+ 976           ****************************************************************************/
+ 977          UINT32 irc_pulse_to_code(UINT32 pulse_width, UINT32 pulse_polarity)
+ 978          {
+ 979   1              UINT8 i;
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 17  
+
+ 980   1              UINT32 key_code = PAN_KEY_INVALID;
+ 981   1      
+ 982   1              for (i = 0; i< IRP_CNT; i++)
+ 983   1              {
+ 984   2                      key_code = irc_decode(irc_decoders[i], pulse_width, pulse_polarity);
+ 985   2                      if( (key_code != PAN_KEY_INVALID) && (key_code != 0x00000000L))
+ 986   2                      {
+ 987   3                              return key_code;
+ 988   3                      }
+ 989   2              }
+ 990   1       
+ 991   1              if (i == IRP_CNT)
+ 992   1              {
+ 993   2                      return PAN_KEY_INVALID;
+ 994   2              }
+ 995   1      }
+ 996          
+ 997          /*----------------------------------------------------------------------
+ 998          * Function_Name: IR_GenerateCode
+ 999          *
+1000          * Description: IR controler generate code
+1001          *
+1002          * Arguments: None
+1003          *
+1004          * Return Value: None
+1005          *----------------------------------------------------------------------*/
+1006          void IR_GenerateCode(void)
+1007          {
+1008   1              unsigned long cur_code, pulse_width;// last_width;
+1009   1              unsigned char pulse_polarity;
+1010   1              unsigned char rlc_data;
+1011   1              unsigned char sub_code[4];
+1012   1              unsigned char reg = 0;
+1013   1              static unsigned i = 0;
+1014   1              struct irc_decoder *ird;
+1015   1              unsigned char test_ir = 0;
+1016   1      
+1017   1              for (i = 0; i< IRP_CNT; i++)
+1018   1              {
+1019   2                      ird = irc_decoders[i];
+1020   2                      ird->first_half_got = 0;
+1021   2                      ird->decode_step = 0;
+1022   2                      ird->key_bit_cnt = 0;
+1023   2                      CLEAR_CODE(ird->key_code);
+1024   2              }
+1025   1              pulse_width = 0;
+1026   1              while (bufferin != bufferout)
+1027   1              {
+1028   2                      rlc_data = ir_buffer[bufferout];
+1029   2                      //printf("    rptr=%bx, wptr=%bx, data=%bx\n", bufferout, bufferin, rlc_data);
+1030   2      
+1031   2                      /* The MSB bit is the status bit, LSB 7 bits is time ticks,
+1032   2                       * If some one status is too long, mult-bytes maybe used.
+1033   2                       */
+1034   2                      pulse_width += ((rlc_data & 0x7f) * CLK_CYC_US); /* Pulse width */
+1035   2                      pulse_polarity = ((rlc_data&0x80)>>7);
+1036   2                      bufferout ++;
+1037   2                      if(bufferout == 0xff)
+1038   2                      {
+1039   3                              bufferout = 0;
+1040   3                      }
+1041   2                      //bufferout = (++bufferout & (IR_BUF_LEN - 1)); /* Next data */
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 18  
+
+1042   2                      /* Long pulse */
+1043   2                      if ((!((rlc_data ^ ir_buffer[bufferout]) & 0x80)) && (bufferout != bufferin))
+1044   2                      {
+1045   3                              continue;
+1046   3                      }
+1047   2      
+1048   2                      //printf(" rptr=%bx, wptr=%bx, level=%bd, width=%ld\n",  bufferout, bufferin,((rlc_data&0x80)>>7), pulse
+             -_width);
+1049   2                      if ((cur_code = irc_pulse_to_code(pulse_width,pulse_polarity)) != PAN_KEY_INVALID)
+1050   2                      {
+1051   3                              //printf("0x%08lx\n",cur_code);
+1052   3                              sub_code[0] = cur_code & 0xff;
+1053   3                              sub_code[1] = (cur_code >> 8) & 0xff;
+1054   3                              sub_code[2] = (cur_code >> 16) & 0xff;
+1055   3                              sub_code[3] = (cur_code >> 24) & 0xff;
+1056   3                              //g_set_ir_key.ir_key_low0 = 0x8f;
+1057   3                              //g_set_ir_key.ir_key_low1 = 0x70;
+1058   3                              //g_set_ir_key.ir_key_low2 = 0xdf;
+1059   3                              for(i=0;i<8;i++)
+1060   3                              {
+1061   4                                      if(cur_code== g_ir_power_key[i])
+1062   4                                      {
+1063   5                                              g_ir_flag = 1;
+1064   5                                              //printf("IR_GenerateCode!\n");
+1065   5                                      }
+1066   4                              }
+1067   3                      }
+1068   2                      pulse_width = 0;
+1069   2              }
+1070   1      }
+1071          
+1072          /*----------------------------------------------------------------------
+1073          * Function_Name: IR_ISR
+1074          *
+1075          * Description: Receive the remote controller signal from Interrupt Requested.
+1076          *
+1077          * Arguments: None
+1078          *
+1079          * Return Value: None
+1080          *----------------------------------------------------------------------*/
+1081          void IR_ISR(void)
+1082          {       
+1083   1              volatile unsigned char status, num, num1;
+1084   1      
+1085   1              while (status = (READ_BYTE(IR_REG_ISR) & 3))
+1086   1              {
+1087   2                      WRITE_BYTE(IR_REG_ISR, status);
+1088   2                      switch (status)
+1089   2                      {
+1090   3                              case 0x02:/* If timeout, generate IR code in HSR */
+1091   3                              case 0x01:/* If FIFO trigger, copy data to buffer */
+1092   3                                      do
+1093   3                                      {
+1094   4                                              num1 = num = READ_BYTE(IR_REG_FIFOCTRL) & 0x7F;
+1095   4                                              while (num > 0)
+1096   4                                              {
+1097   5                                                      /* Put RLC to buffer */
+1098   5                                                      ir_buffer[bufferin++] = READ_BYTE(IR_REG_RLCBYTE);
+1099   5                                                      if(bufferin == 0xff)
+1100   5                                                      {
+1101   6                                                              bufferin = 0;
+1102   6                                                      }
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 19  
+
+1103   5                                                      //bufferin &= (IR_BUF_LEN - 1);
+1104   5                                                      num--;
+1105   5                                              };
+1106   4                                      }while (num1 > 0);
+1107   3                                      break;
+1108   3                              default:
+1109   3                                      break;
+1110   3                      }
+1111   2                      
+1112   2                      if (status == 0x02)
+1113   2                      {
+1114   3                              //printf(" IR_GenerateCode \n ");
+1115   3                              IR_GenerateCode();//add 20120818
+1116   3                              num = READ_BYTE(IR_REG_FIFOCTRL) & 0x7F;
+1117   3                              while (num > 0)
+1118   3                              {
+1119   4                                      READ_BYTE(IR_REG_RLCBYTE);
+1120   4                                      num--;
+1121   4                              };
+1122   3                              bufferin = 0;
+1123   3                              bufferout = 0;
+1124   3                      }
+1125   2              }
+1126   1      
+1127   1              return;
+1128   1      
+1129   1      }
+1130          
+1131          /*----------------------------------------------------------------------
+1132          * Function_Name: IR_Init
+1133          *
+1134          * Description: IR service initial routine
+1135          *
+1136          * Arguments:
+1137          *
+1138          * Return Value:
+1139          *----------------------------------------------------------------------*/
+1140          void IR_Init(void)
+1141          {
+1142   1              unsigned char reg;
+1143   1              //init ir clk
+1144   1              /* Reset IR */
+1145   1              reg = READ_BYTE(SYS_REG_RST);
+1146   1              reg &= ~(1 << IR_BIT);
+1147   1              WRITE_BYTE(SYS_REG_RST, reg);
+1148   1              reg |= (1 << IR_BIT);
+1149   1              WRITE_BYTE(SYS_REG_RST, reg);
+1150   1      
+1151   1              WRITE_BYTE(IR_REG_CFG, 0x00);
+1152   1              /* Working clock expressions:
+1153   1               * (IR_CLK / ((CLK_SEL+1)*4)) = 1 / CLK_CYC_US, IR_CLK = 1.5MHz
+1154   1               * => CLK_SEL = (IR_CLK*CLK_CYC_US)/4 - 1
+1155   1               */
+1156   1              //reg = 0x80 | ((15*CLK_CYC_US/40)-1);
+1157   1              reg = ((15 * CLK_CYC_US / 40) - 1);
+1158   1      
+1159   1              //reg =  ((15*CLK_CYC_US/40)-1);
+1160   1              WRITE_BYTE(IR_REG_CFG, reg);
+1161   1      
+1162   1              /* FIFO threshold */
+1163   1              WRITE_BYTE(IR_REG_FIFOCTRL, 0x8f); //16bytes //0xbf);
+1164   1      
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 20  
+
+1165   1              /* Timeout threshold expressions:
+1166   1               * ((TIMETHR + 1) * 128 * CLK_CYC_US) = TIMEOUT_US
+1167   1               * => TIMETHR = (TIMEOUT_US/(128 * CLK_CYC_US)) - 1
+1168   1               */
+1169   1              reg = TIMEOUT_US / (CLK_CYC_US << 7) - 1;
+1170   1      #ifdef PMU_MCU_M3921
+1171   1              WRITE_BYTE(IR_REG_TIMETHR, reg);
+1172   1      #else
+                      reg = TIMEOUT_US / (8 << 7) - 1;
+                      reg = 22;
+                      WRITE_BYTE(IR_REG_TIMETHR, reg);
+              #endif
+1177   1      
+1178   1              /* Noise pulse timeout expressions:
+1179   1               * Value = VALUE_NOISETHR / CLK_CYC_US
+1180   1               */
+1181   1              reg = NOISETHR_US / CLK_CYC_US;
+1182   1      #ifdef PMU_MCU_M3921
+1183   1              WRITE_BYTE(IR_REG_NOISETHR, reg);
+1184   1      #else
+                      WRITE_BYTE(IR_REG_NOISETHR, 10);
+              #endif
+1187   1      
+1188   1              /* Ensure no pending interrupt */
+1189   1              WRITE_BYTE(IR_REG_ISR, 0x03);
+1190   1      
+1191   1              /* Enable IR Interrupt */
+1192   1              WRITE_BYTE(IR_REG_IER, 0x03);
+1193   1      
+1194   1              //IR_ClearRoundBuf();
+1195   1              reg = READ_BYTE(SYS_REG_IPR);
+1196   1              reg |= (1 << IR_BIT);
+1197   1              WRITE_BYTE(SYS_REG_IPR, reg);
+1198   1      
+1199   1              reg = READ_BYTE(SYS_REG_IER);
+1200   1              reg |= (1 << IR_BIT);
+1201   1      
+1202   1              WRITE_BYTE(SYS_REG_IER, reg);
+1203   1      
+1204   1              EX0 = 1;
+1205   1      }
+1206          
+1207          INT8 get_ir()
+1208          {
+1209   1              if(g_ir_flag == 1)
+1210   1              {
+1211   2                      return SUCCESS;
+1212   2              }
+1213   1              else
+1214   1              {
+1215   2                      return ERROR;
+1216   2              }
+1217   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   6198    ----
+   CONSTANT SIZE    =    105    ----
+   XDATA SIZE       =   1459     176
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+C51 COMPILER V7.06   IR                                                                    10/27/2014 10:37:58 PAGE 21  
+
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

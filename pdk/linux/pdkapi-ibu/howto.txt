@@ -1,0 +1,4 @@
+make KERNEL_DIR="/zhsa022/usrhome/tony.zhang/work/P4-Test2/PDK1.6_Release/release_pkt/linux-linaro-3.4-rc3"  BOARD=C3921 FULL=y IBUSDK=Y ALIDBG=Y
+
+
+

@@ -1,0 +1,465 @@
+menu "ALi driver selection"
+
+choice
+    prompt "ALi chip ID selection"
+    default ALI_CHIP_M3921
+    help
+      Select different ALi chip ID
+
+config ALI_CHIP_M3921
+	bool "ALi M3921 chip ID"
+	
+config ALI_CHIP_M3515
+	bool "ALi M3515 chip ID"
+
+endchoice
+
+config ALI_AS
+	bool "Support ALi Advanced Security project"
+
+config ENABLE_RPC
+	bool "Enable Remote Rrocess Call function for dual CPUs project"
+
+config RPC_ALI
+	bool "ALi Remote Process Call Driver"
+	depends on ENABLE_RPC
+
+config ALI_RPCNG
+	bool "ALi Remote Process Call Driver Next Generation"
+	depends on ENABLE_RPC
+
+config RPC_HLD_DECV
+	bool "ALi RPC hld decv driver"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_AVSYNC
+	bool "ALi RPC hld AV sync"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_DIS
+	bool "ALi RPC hld dis driver"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_DECA
+	bool "ALi RPC hld deca driver"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_SND
+	bool "ALi RPC hld snd driver"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_GMA
+	bool "ALi RPC hld gma driver"
+	depends on ENABLE_RPC
+	
+config RPC_PE
+	bool "ALi RPC pe driver"
+	depends on ENABLE_RPC
+	
+config RPC_SBM
+	bool "ALi RPC sbm driver"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_VBI
+	bool "ALi RPC hld vbi driver"
+	depends on ENABLE_RPC
+	
+config RPC_HLD_SDEC
+	bool "ALi RPC hld sdec driver"
+	depends on ENABLE_RPC
+	
+config RPC_IMAGE
+	bool "ALi RPC image driver"
+	depends on ENABLE_RPC
+	
+config RPC_ENCODER
+    bool "ALi RPC Encoder Driver"
+    depends on ENABLE_RPC
+    default y	
+    
+config FB_ALI
+	bool "ALi Frame Buffer Driver"
+	depends on FB && RPC_HLD_DIS
+	select FB_CFB_FILLRECT
+    select FB_CFB_COPYAREA
+    select FB_CFB_IMAGEBLIT
+    ---help---
+      This driver implements support for the ALi STB SOC
+      	
+config PE_ALI
+	bool "ALi PE Driver for Media Player library"
+	depends on RPC_PE
+	
+config HDMI_ALI
+	bool "ALi HDMI Driver"
+	
+config HDCP_ENABLE_ALI
+	bool "ALi HDMI Driver HDCP Enable"
+	depends on HDMI_ALI	
+
+config CEC_ENABLE_ALI
+	bool "ALi HDMI Driver CEC Enable"
+	depends on HDMI_ALI
+	
+config ALI_HEC
+	bool "ALi HEC Driver Enable"
+	depends on HDMI_ALI
+	
+config VIDEO_ALI
+	bool "ALi Video Player Core"
+	
+config ALI_M36_AUDIO_RPC
+	bool "ALi Audio Player Core"
+	depends on ENABLE_RPC
+	
+config ALI_AVSYNC_RPC
+	bool "ALi AV sync Driver"
+	depends on ENABLE_RPC
+	
+config ALI_M36_CIC
+	tristate "ALi M36xx CI (Common Interface) Controller"
+	depends on DVB_CORE
+	help
+		TODO
+
+config ALI_VOLBAR
+	tristate "ALi volume bar driver"
+	help
+	support ALI volbar driver
+	
+config ALI_KEYPAD
+	tristate "ALi keypad driver"
+	help
+	support ALI keypad driver
+		
+config ALI_M36_SMARTCARD
+	bool "ALi M36xx Smart Card Controller"
+	
+config ALI_SDEC
+	tristate "ALi M36 SDEC module"
+	help
+        support ALI_SDEC module
+	
+config ALI_VBI
+	tristate "ALi M36 VBI module"
+	help
+        support ALI_VBI module
+	
+config DVB_ALI_M36_DMX
+	bool "ALi DMX Driver"
+	depends on ENABLE_RPC
+	
+config DVB_ALI_M36_TSG
+	bool "ALi TSG Driver"
+	
+config DVB_ALI_M36_TSI
+	bool "ALi TSI Driver"
+	
+config DVB_ALI_M36_TEST
+	tristate "ALi M36 TEST"
+#	depends on DVB_CORE
+	help
+	  Support for ALi M3602 TEST.
+
+	  Say Y or M if you own such a device and want to use it.  
+	
+config DVB_SUPPORT
+	tristate "Ali App need DVB driver"
+	help
+	  Support for ALI DVB driver.
+
+config ALI_GPIO_I2C
+    tristate "Ali GPIO to I2C driver."    
+    help
+      This provides a  GPIO to I2C driver by Ali SoC.
+
+
+config ALI_QPSK
+    tristate "Ali DVBS/S2 NIM driver."
+    depends on DVB_SUPPORT
+    help
+      This provides a DVB-S/S2 NIM driver by Ali SoC.
+      
+config SHARP_VZ7306
+    tristate "Sharp VZ7306 tuner driver"
+    depends on ALI_QPSK
+    help
+      This provides a Shart VZ7306 tuner driver.
+      
+config AV2012
+    tristate "AV2012 tuner driver"
+    depends on ALI_QPSK
+    help
+      This provides an AV2012 tuner driver.
+      
+config ALI_QAM
+    tristate "Ali QAM NIM driver."
+    depends on DVB_SUPPORT
+    help
+      This provides a DVB-C NIM driver by Ali SoC.
+      
+config TDA18250
+    tristate "TDA18250 tuner driver"
+    depends on ALI_QAM
+    help
+      This provides a Tda18250 tuner driver.
+
+config TDA18250_AB
+   tristate "TDA18250_AB tuner driver"
+   depends on ALI_QAM
+   help
+     This provides a Shart TDA18250_AB tuner driver.
+     
+config MXL203
+		tristate "MXL203 tuner driver."
+	  depends on ALI_QAM
+	  help
+	    This provides a MXL203 tuner driver.
+
+config MXL241
+		tristate "MXL241 tuner driver."
+	  depends on ALI_QAM
+	  help
+	    This provides a MLX241 tuner driver.
+
+config MXL603
+   tristate "MXL603 tuner driver"
+   depends on ALI_QAM
+   help
+     This provides a Shart MXL603 tuner driver.
+     
+config RT810
+   tristate "RT810 tuner driver"
+   depends on ALI_QAM
+   help
+     This provides a Shart RT810 tuner driver.
+
+config RT820C
+   tristate "RT820C tuner driver"
+   depends on ALI_QAM
+   help
+     This provides a Shart RT820C tuner driver.
+     
+config ALI_COFDM
+    tristate "Ali COFDM NIM driver."
+    depends on DVB_SUPPORT
+    help
+      This provides a DVB-T/T2/ISDBT NIM driver by Ali SoC.
+      
+config CXD2837
+    tristate "SONY CXD2837 demod driver for DVBT/DVBT2"
+    depends on ALI_COFDM
+    help
+      This provides a SONY cxd2837 demod driver for DVBT/DVBT2.  
+config CXD2838
+    tristate "SONY CXD2838 demod driver for ISDBT"
+    depends on ALI_COFDM
+    help
+      This provides a SONY cxd2838 demod driver for ISDBT. 
+config CXD2872
+    tristate "SONY CXD2872 tuner driver"
+    depends on ALI_COFDM
+    help
+      This provides a SONY cxd2872 tuner driver.           
+config TDA10025
+    tristate "TDA10025 nim driver for Ali SoC"
+    depends on DVB_SUPPORT
+    help
+      This provides a TDA10025 nim driver for Ali SoC.
+      
+config OTHER_NIM
+    tristate "OTHER_NIM nim driver for Ali SoC"
+    depends on DVB_SUPPORT
+    help
+      This provides a OTHER_NIM nim driver for Ali SoC.
+
+config OTHER_TUNER
+    tristate "OTHER_TUNER tuner driver"
+    depends on DVB_SUPPORT
+    help
+      This provides a OTHER_TUNER tuner driver.
+
+config ALI_MMC
+	tristate "ALI_MMC/SD/SDIO card support"
+	depends on HAS_IOMEM
+	help
+	  This selects MultiMediaCard, Secure Digital and Secure Digital I/O support.
+	  
+config ALI_MMC_C3921_PATCH
+	bool "Fix C3921 GET CSD Bug"
+	depends on ALI_MMC
+	help
+	  This selects to fix a bug that C3921 gets CSD is not correct completely.
+config SND_SOC_ALI_PCM
+    bool "SoC Audio for ALi M3602/M3603"
+    help
+      This option enables support for ALi M36 Series audio
+      in I2S mode.
+      
+choice
+        prompt "ALi Ethernet support"
+        default ALI_SWITCH
+        help
+          Select different ALi ethernet driver
+
+config ALI_TOE2
+    bool "ALi TOE II support"
+
+config ALI_SWITCH
+    bool "ALi SWITCH support"
+
+config ALI_GMAC
+    bool "ALi GMAC support"
+
+config NONE_ALI_MAC
+	bool "NONE"
+endchoice	
+
+
+choice
+        prompt "IR driver"
+        default ALI_IR
+        help
+          Select a IR driver
+
+config INPUT_IR_LIRC_ALI
+    bool "lirc driver"
+
+config ALI_IR
+    bool "ALi IR driver"
+
+endchoice	
+
+choice
+        prompt "panel driver"
+        default ALI_PAN_CH455
+        help
+          Select a panel driver
+
+config ALI_PAN_CH455
+    tristate "CH455 Panel Driver"
+    help
+      This provides a ALi CH455 Panel driver
+
+config ALI_PAN_CH454
+    tristate "CH454 Panel Driver"
+    help
+      This provides a ALi CH454 Panel driver
+endchoice	
+ 
+
+config ALI_SPI
+    tristate "Ali SPI Controller driver."  
+    depends on SPI_MASTER
+    help
+      This provides a SPI Controller driver.
+
+#config ALI_PFLASH
+#    tristate "ALi parallel flash controller and flash chip driver."
+#    help
+#      This provides a MTD device driver for the ALi parallel flash controller
+#      and most common serial flash chips driver.
+           
+config ALI_SOC
+	bool "ALi Soc driver"
+	
+config ALI_PM
+	bool "ALi power management implementation"
+	
+config ALI_SBM
+	bool "ALi SBM Driver for CPU & SEE memory access"
+	
+config ALI_STC
+	bool "ALi STC Driver for system time clock"
+	
+config ALI_POK
+	bool "ALi POK Driver for system power down protection "
+	
+config ALI_DSC
+	bool "ALi descrambler"
+
+config ALI_CRYPTO_NAND
+   bool "Crypto Nand Driver for ALi"
+   help
+	 This provides crypto nand driver for ALi SoC.
+	 
+config ALI_CRYPTO
+   bool "ALi Crypto using DSC HW"
+   help
+	 Some AES functions.	
+	 	
+config ALI_CE
+	bool "ALi crypto engine"
+	
+config ALI_TRNG
+	bool "ALi TRNG"
+	
+config ALI_PMU	
+	bool "ALi PMU Driver"
+	
+config ALI_OPENVG
+	bool "ALi OpenVG driver for ALi M39"
+    help
+      This option enables support for ALi M39 OpenVG
+
+config ALI_BDMA
+	bool "ALi BDMA Driver"
+	
+config ALI_UART_IO
+	bool "ALi UART IO Driver"
+	
+config ALI_IMAGE
+	bool "ALi image driver"
+	
+config ALI_OTP
+	bool "ALi otp driver"
+
+config ALI_MBX_AS
+	bool "ALi mailbox as support"
+	
+config ALI_ENCODER
+    tristate "Encoder Driver for ALi"
+    depends on RPC_ENCODER
+    default y
+    help
+        This provides interface for support enocder in 3921 chips.
+config WIRELESS_EXT 
+    def_bool y
+	
+config WEXT_PRIV
+    def_bool y
+
+config WEXT_SPY
+    def_bool y
+
+config ALI_SW_AFD
+    def_bool y
+    
+config ALI_HW_AFD
+    def_bool y
+    
+config ALI_WATCHDOG
+    bool "ALi watchdog driver"
+    
+config ALI_DVFS
+    bool "Ali dvfs driver."    
+    
+config TOUCHSCREEN_FT5X0X
+	tristate "FocalTech ft5x0x TouchScreen driver"
+	depends on ARCH_ALI_S3921
+	help
+	  Say Y here to support FocalTech ft5x0x TouchScreen on
+	  ALi S3921 development board.
+
+	  If unsure, say N.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called ft5x06_ts.ko.
+
+config ALI_PWM
+	tristate "ALi GPIO PWM driver"
+	help
+	support ALI GPIO PWM driver
+	
+#add new config here
+endmenu

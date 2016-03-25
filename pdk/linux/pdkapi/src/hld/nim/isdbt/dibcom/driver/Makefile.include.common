@@ -1,0 +1,4 @@
+DIBCOM_DRIVER_OBJECTS += adapter/databus.o adapter/demod.o adapter/tuner.o adapter/frontend.o adapter/component_monitor.o adapter/channel.o adapter/mac.o adapter/antenna.o demod/common/dibx000_i2c_common.o adapter/frontend_tune.o
+
+HAVE_COMMON = 1
+

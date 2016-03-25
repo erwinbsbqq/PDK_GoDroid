@@ -1,0 +1,3 @@
+obj-$(CONFIG_ALI_SWITCH) += ali_switch.o
+#obj-m := ali_switch.o
+ali_switch-y += 	ali_sw_stp.o ali_sw_stp_bpdu.o ali_sw_mc_snooping.o ali_sw.o

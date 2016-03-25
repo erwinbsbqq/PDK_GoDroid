@@ -1,0 +1,4 @@
+DIBCOM_DRIVER_OBJECTS += sip/dibx09x/dibx09x_common.o tuner/dib0090/dib0090_reset.o tuner/dib0090/dib0090.o
+
+HAVE_DIB0090 = 1
+

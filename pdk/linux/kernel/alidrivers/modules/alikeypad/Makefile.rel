@@ -1,0 +1,8 @@
+#
+# Makefile for the kernel DVB device drivers.
+#
+
+obj-$(CONFIG_ALI_KEYPAD) += alikeypad.o
+
+#alikeypad-y := ali_keypad.o
+

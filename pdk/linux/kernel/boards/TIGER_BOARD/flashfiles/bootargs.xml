@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+type: string,mac,file,uint,int,ushort,short,ubyte,byte
+
+typedef struct
+{
+	char magic[16];	// bootargs
+	int registerinfo_size;
+	unsigned char registerinfo[1024*8-12-16-4];		
+	int cmdline_size;
+	char cmdline[1024*4-4];
+	int cmdline_size_rcv;
+	char cmdline_rcv[1024*4-4];
+	int meminfo_size;	
+	unsigned char meminfo[1024*4-4];	
+	int meminfo_size_rcv;	
+	unsigned char meminfo_rcv[1024*4-4];
+	int tveinfo_size;		
+	unsigned char tveinfo[1024*28-4];	
+}BOOTARGS;
+
+-->
+<bootargs>
+	<magic type="string" size="16">bootargs</magic>
+	<registerinfo type="file" size="0x1FE0">registerinfo.bin</registerinfo>
+	<cmdline type="file" size="0xFFC">cmdline</cmdline>
+	<cmdline_rcv type="file" size="0xFFC">cmdline_rcv</cmdline_rcv>
+	<meminfo type="file" size="0xFFC">memmapinfo.bin</meminfo>
+	<meminfo_rcv type="file" size="0xFFC">memmapinfo_rcv.bin</meminfo_rcv>
+	<tveifno type="file" size="0x6FFC">tveconfig.bin</tveifno>	
+</bootargs>

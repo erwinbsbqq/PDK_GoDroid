@@ -1,0 +1,23 @@
+choice
+	prompt "ALi M36 chip ID"
+	depends on ALI_M36
+	default ALI_M3606
+	help
+	  Select different ALi chip ID
+
+config ALI_M3606
+	bool "ALi M3606 chip ID"
+
+config ALI_M3701C
+	bool "ALi M3701C chip ID"
+
+config ALI_M3701E
+	bool "ALi M3701E chip ID"
+	
+config ALI_M3701G
+	bool "ALi M3701G chip ID"
+
+config ALI_M3503
+	bool "ALi M3503 chip ID"
+endchoice
+

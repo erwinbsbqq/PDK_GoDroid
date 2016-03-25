@@ -1,0 +1,199 @@
+C51 COMPILER V7.06   PMU_RTC                                                               10/27/2014 10:37:58 PAGE 1   
+
+
+C51 COMPILER V7.06, COMPILATION OF MODULE PMU_RTC
+OBJECT MODULE PLACED IN pmu_rtc.OBJ
+COMPILER INVOKED BY: D:\SW_Install\C51\BIN\C51.EXE pmu_rtc.c LARGE BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          #include <dp8051xp.h>
+   2          #include <stdio.h>
+   3          #include "sys.h"
+*** WARNING C322 IN LINE 90 OF sys.h: unknown identifier
+   4          #include "pmu_rtc.h"
+   5          //--------------------------------------------------------------------
+   6          
+   7          RTC_TIMER g_rtc;
+   8          RTC_TIMER g_wake_rtc;
+   9          static void pmu_timer1_int_en(UINT8 en);
+  10          static UINT8 is_leap_year(pRTC_TIMER rtc);
+  11          //--------------------------------------------------------------------
+  12          
+  13          void pmu_timer1_set_time(unsigned char autoload) //
+  14          {
+  15   1              UINT8 div=0x1;
+  16   1              UINT8 reg=0;
+  17   1              UINT8 reg1=0;
+  18   1      
+  19   1              if(autoload) 
+  20   1              { 
+  21   2                      PMU_WRITE_BYTE(PMU_RTC1_CNT_LOW0,0x0c); //init value=0xffffffff-(x sec*1000*1000*27/64)
+  22   2                      PMU_WRITE_BYTE(PMU_RTC1_CNT_LOW1,0x90);// 1 second
+  23   2                      PMU_WRITE_BYTE(PMU_RTC1_CNT_LOW2,0xf9);
+  24   2                      PMU_WRITE_BYTE(PMU_RTC1_CNT_LOW3,0xff);
+  25   2      
+  26   2                      PMU_WRITE_BYTE(PMU_RTC1_AUTO_LOAD,0x0c); //only by byte operate for pmu
+  27   2                      PMU_WRITE_BYTE(PMU_RTC1_AUTO_LOAD+1,0x90);
+  28   2                      PMU_WRITE_BYTE(PMU_RTC1_AUTO_LOAD+2,0xf9);
+  29   2                      PMU_WRITE_BYTE(PMU_RTC1_AUTO_LOAD+3,0xff);    
+  30   2                      PMU_WRITE_BYTE(PMU_RTC1_CTRL,PMU_READ_BYTE(PMU_RTC1_CTRL)|(1<<7));  //AUTO LOAD EN  
+  31   2              }
+  32   1      
+  33   1              EX1=1;
+  34   1              EA = 1;
+  35   1              reg=PMU_READ_BYTE(MCU_SYS_IPR1);  
+  36   1              reg |=1<<0;
+  37   1              PMU_WRITE_BYTE(MCU_SYS_IPR1, reg); //MCU  porlarity
+  38   1              reg=PMU_READ_BYTE(MCU_SYS_IER1);  //MCU IE 
+  39   1              reg |=1<<0;
+  40   1              PMU_WRITE_BYTE(MCU_SYS_IER1, reg);
+  41   1              if(autoload)
+  42   1              {
+  43   2                      PMU_WRITE_BYTE(PMU_RTC1_CTRL, 0x14 | div|(1<<7));// //AUTO LOAD EN  
+  44   2              }
+  45   1              else
+  46   1              {
+  47   2                      PMU_WRITE_BYTE(PMU_RTC1_CTRL, 0x14 | div);
+  48   2              }
+  49   1      
+  50   1              pmu_timer1_int_en(1);
+  51   1       }
+  52          
+  53          
+  54          static void pmu_timer1_int_en(UINT8 en)
+C51 COMPILER V7.06   PMU_RTC                                                               10/27/2014 10:37:58 PAGE 2   
+
+  55          {
+  56   1              if(en)
+  57   1              {
+  58   2                      PMU_WRITE_BYTE(PMU_RTC1_CTRL,PMU_READ_BYTE(PMU_RTC1_CTRL)|(0x1<<4));
+  59   2              }
+  60   1              else
+  61   1              {
+  62   2                      PMU_WRITE_BYTE(PMU_RTC1_CTRL,PMU_READ_BYTE(PMU_RTC1_CTRL)&(~(0x1<<4)));
+  63   2              }
+  64   1      }
+  65          
+  66          void update_current_time(pRTC_TIMER rtc)
+  67          {
+  68   1              if(rtc->sec>59)
+  69   1              {
+  70   2                      rtc->sec=0;
+  71   2                      rtc->min++;
+  72   2                      if(rtc->min>59)
+  73   2                      {
+  74   3                              rtc->min=0;
+  75   3                              rtc->hour++;
+  76   3                              if(rtc->hour>23)
+  77   3                              {
+  78   4                                      rtc->hour = 0;
+  79   4                                      rtc->day++;
+  80   4                              
+  81   4                                      if((rtc->month==1)||(rtc->month==3)||(rtc->month==5)\
+  82   4                                              ||(rtc->month==7)||(rtc->month==8)||(rtc->month==10)||(rtc->month==12))
+  83   4                                      {
+  84   5                                              if(rtc->day>31)
+  85   5                                              {
+  86   6                                                      rtc->day = 1;
+  87   6                                                      rtc->month++;
+  88   6                                                      if(rtc->month>12)
+  89   6                                                      {
+  90   7                                                              rtc->month=1;
+  91   7                                                              rtc->year++;
+  92   7                                                      }
+  93   6                                              }
+  94   5                                      }
+  95   4                                      
+  96   4                                      if(rtc->month==2)
+  97   4                                      {
+  98   5                                              if((rtc->day>29)&&(is_leap_year(rtc)))
+  99   5                                              {
+ 100   6                                                      rtc->day=1;
+ 101   6                                                      rtc->month ++;
+ 102   6                                              }
+ 103   5                                              else if((rtc->day>28)&&(is_leap_year(rtc)==0))
+ 104   5                                              {
+ 105   6                                                      rtc->day = 1;
+ 106   6                                                      rtc->month++;
+ 107   6                                              }
+ 108   5                                      }
+ 109   4                                      
+ 110   4                                      if((rtc->month==4)||(rtc->month==6)||(rtc->month==9)||(rtc->month==11))
+ 111   4                                      {
+ 112   5                                              if(rtc->day>30)
+ 113   5                                              {
+ 114   6                                                      rtc->day = 1;
+ 115   6                                                      rtc->month++;
+ 116   6                                              }
+C51 COMPILER V7.06   PMU_RTC                                                               10/27/2014 10:37:58 PAGE 3   
+
+ 117   5                                      }
+ 118   4                              
+ 119   4                              }
+ 120   3                      }
+ 121   2              }
+ 122   1              //printf("year=%d,month=%d,day=%d,hour=%d,min=%d,sec=%d\n",g_year,g_month,g_day,g_hour,g_min,g_sec);
+ 123   1      }
+ 124          
+ 125          void main_cpu_get_time(pRTC_TIMER rtc)
+ 126          {
+ 127   1              PMU_WRITE_BYTE(MAILBOX_GET_YEAR_H,rtc->year_h);
+ 128   1              PMU_WRITE_BYTE(MAILBOX_GET_YEAR_L,rtc->year_l);
+ 129   1              PMU_WRITE_BYTE(MAILBOX_GET_MONTH,rtc->month);
+ 130   1              PMU_WRITE_BYTE(MAILBOX_GET_DAY,rtc->day);
+ 131   1              PMU_WRITE_BYTE(MAILBOX_GET_HOUR,rtc->hour);
+ 132   1              PMU_WRITE_BYTE(MAILBOX_GET_MIN,rtc->min);
+ 133   1              PMU_WRITE_BYTE(MAILBOX_GET_SEC,rtc->sec);
+ 134   1      }
+ 135          
+ 136          static UINT8 is_leap_year(pRTC_TIMER rtc)
+ 137          {
+ 138   1              if((rtc->year%4==0)&&(rtc->year%100!=0))
+ 139   1              {
+ 140   2                      return 1;
+ 141   2              }
+ 142   1              else if(rtc->year%400==0)
+ 143   1              {
+ 144   2                      return 1;
+ 145   2              }
+ 146   1              else 
+ 147   1              {
+ 148   2                      return 0;
+ 149   2              }
+ 150   1      }
+ 151          
+ 152          /*
+ 153          *       pmu timer1 interrupt ISR,S3503 use auto load mode
+ 154          */
+ 155          void extern_int1() interrupt 2
+ 156          {
+ 157   1              UINT8  reg =0;
+ 158   1              UINT8  div=0x01;
+ 159   1              EA=0;
+ 160   1              reg = PMU_READ_BYTE(MCU_SYS_INT_STS);
+ 161   1              PMU_WRITE_BYTE(PMU_RTC1_CTRL,PMU_READ_BYTE(PMU_RTC1_CTRL)|div|(1<<3));
+ 162   1              //printf("enter int1 [%bx]\n",PMU_READ_BYTE(MCU_SYS_INT_STS));
+ 163   1              if(reg&0x1)
+ 164   1              {
+ 165   2                      g_rtc.sec++;
+ 166   2                      update_current_time(&g_rtc);
+ 167   2              }
+ 168   1              EA=1;
+ 169   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    838    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     22       7
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+C51 COMPILER V7.06   PMU_RTC                                                               10/27/2014 10:37:58 PAGE 4   
+
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

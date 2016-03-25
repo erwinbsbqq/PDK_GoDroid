@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+type: string,mac,file,uint,int,ushort,short,ubyte,byte
+
+typedef struct
+{
+	unsigned int kernel_start;
+	unsigned int kernel_len;
+
+	unsigned int boot_see_start;
+	unsigned int boot_see_len;
+	
+	unsigned int see_start;
+	unsigned int see_len;
+
+	unsigned int ae_start;
+	unsigned int ae_len;
+
+	unsigned int mcapi_start;
+	unsigned int mcapi_len;(unsigned long)(0x85800000 -0x857fe000);
+
+	unsigned int vbv_start;
+	unsigned int vbv_len;
+
+	unsigned int decv_fb_start;
+	unsigned int decv_fb_len;
+
+	unsigned int decv_raw_start;
+	unsigned int decv_raw_len;
+
+	unsigned int osd_fb_start;
+	unsigned int osd_fb_len;
+
+	unsigned int boot_media_start;
+	unsigned int boot_media_len;
+	
+	unsigned int reserve[780];
+}ADF_BOOT_MEMMAPINFO; // maximun is 800X4 bytes
+
+-->
+<memmapinfo>
+	<kernel_start type="uint">0x00008000</kernel_start>
+	<kernel_len type="uint">0x12</kernel_len>
+
+	<boot_see_start type="uint">0x21</boot_see_start>
+	<boot_see_len type="uint">0x22</boot_see_len>
+	
+	<see_start type="uint">0x04000200</see_start>
+	<see_len type="uint">0x32</see_len>
+	
+	<ae_start type="uint">0x08000200</ae_start>
+	<ae_len type="uint">0x42</ae_len>
+
+	<mcapi_start type="uint">0x057fe000</mcapi_start>
+	<mcapi_len type="uint">0x2000</mcapi_len>
+
+	<vbv_start type="uint">0x05A00000</vbv_start>
+	<vbv_len type="uint">0x600000</vbv_len>
+	
+	<decv_fb_start type="uint">0x09100000</decv_fb_start>
+	<decv_fb_len type="uint">0x05A00000</decv_fb_len>
+
+	<decv_raw_start type="uint">0x03fbf000</decv_raw_start>
+	<decv_raw_len type="uint">0x21000</decv_raw_len>
+
+	<osd_fb_start type="uint">0x91</osd_fb_start>
+	<osd_fb_len type="uint">0x92</osd_fb_len>
+
+	<boot_media_start type="uint">0x02E00000</boot_media_start>
+	<boot_media_len type="uint">0xa2</boot_media_len>
+
+	<ramdisk_start type="uint">0x81008000</ramdisk_start>
+	<ramdisk_len type="uint">0xb2</ramdisk_len>
+
+	<cmd_queue_buffer_start type="uint">0x03FBF000</cmd_queue_buffer_start>
+	<cmd_queue_buffer_len type="uint">0x21000</cmd_queue_buffer_len>
+
+	<vcap_buffer_start type="uint">0x03C83000</vcap_buffer_start>
+	<vcap_buffer_len type="uint">0x33c000</vcap_buffer_len>
+
+	<!--share with VENC buffer-->
+	<boot_media_mkv_buf_start type="uint">0x08100000</boot_media_mkv_buf_start>
+	<boot_media_mkv_buf_len type="uint">0x1000000</boot_media_mkv_buf_len>
+	
+	<rsv type="uint" size="772"></rsv>
+
+</memmapinfo>
+

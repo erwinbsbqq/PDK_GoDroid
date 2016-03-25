@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+type: string,mac,file,uint,int,ushort,short,ubyte,byte
+
+// TV system
+enum TVSystem
+{
+	PAL		= 0	, //	PAL4.43(==PAL_BDGHI)		(Fh=15.625,fv=50)
+	NTSC		, //	NTSC3.58					(Fh=15.734,Fv=59.94)
+	PAL_M		, //	PAL3.58					(Fh=15.734,Fv=59.94)
+	PAL_N		, //	PAL4.43(changed PAL mode)	(Fh=15.625,fv=50)	
+	PAL_60		, //							(Fh=15.734,Fv=59.94)
+	NTSC_443	, //	NTSC4.43					(Fh=15.734,Fv=59.94)
+	SECAM		,
+	MAC			,
+	LINE_720_25,	//added for s3601
+	LINE_720_30,	//added for s3601
+	LINE_1080_25,	//added for s3601
+	LINE_1080_30,	//added for s3601
+
+	LINE_1080_50,	//added for s3602f
+	LINE_1080_60,   //added for s3602f
+	LINE_1080_24,	//added for s3602f	
+	LINE_1152_ASS,  //added for s3602f
+	LINE_1080_ASS,  //added for s3602f
+	PAL_NC		, //	PAL3.58(changed PAL mode)	(Fh=15.625,fv=50)
+
+	LINE_576P_50_VESA,
+	LINE_720P_60_VESA,
+	LINE_1080P_60_VESA,
+};
+
+typedef enum
+{
+	TV_ASPECT_RATIO_43 = 0,
+	TV_ASPECT_RATIO_169,
+	TV_ASPECT_RATIO_AUTO
+} TV_ASPECT_RATIO_TYPE;
+
+{
+    DISPLAY_MODE_NORMAL = 0,
+    DISPLAY_MODE_LETTERBOX,
+    DISPLAY_MODE_PANSCAN,
+} DISPLAY_MODE_TYPE;
+
+typedef enum
+{
+	SCART_CVBS = 0,
+	SCART_RGB,
+	SCART_SVIDEO,
+	SCART_YUV,
+} SCART_OUT_TYPE;
+
+/* Define for VDAC configuration */
+#define VDAC_NUM_MAX		6
+#define VDAC_TYPE_NUM		6
+//Type
+#define VDAC_TYPE_CVBS		0
+#define VDAC_TYPE_SVIDEO	1
+#define VDAC_TYPE_YUV		2
+#define VDAC_TYPE_RGB		3
+#define VDAC_TYPE_SCVBS		4
+#define VDAC_TYPE_SSV		5
+#define VDAC_TYPE_MAX		6
+//Detail
+#define VDAC_CVBS		(VDAC_TYPE_CVBS<<2|0)	// 0x0
+#define VDAC_SVIDEO_Y		(VDAC_TYPE_SVIDEO<<2|0)	// 0x4
+#define VDAC_SVIDEO_C		(VDAC_TYPE_SVIDEO<<2|1)	// 0x5
+#define VDAC_YUV_Y		(VDAC_TYPE_YUV<<2|0)	// 0x8
+#define VDAC_YUV_U		(VDAC_TYPE_YUV<<2|1)	// 0x9
+#define VDAC_YUV_V		(VDAC_TYPE_YUV<<2|2)	// 0xA
+#define VDAC_RGB_R		(VDAC_TYPE_RGB<<2|0)	// 0xC
+#define VDAC_RGB_G		(VDAC_TYPE_RGB<<2|1)	// 0xD
+#define VDAC_RGB_B		(VDAC_TYPE_RGB<<2|2)	// 0xE
+#define VDAC_SCVBS		(VDAC_TYPE_SCVBS<<2|0)	// 0x10
+#define VDAC_SSV_Y		(VDAC_TYPE_SSV<<2|0)	// 0x14
+#define VDAC_SSV_C		(VDAC_TYPE_SSV<<2|1)	// 0x15
+#define VDAC_NULL		0xFF
+
+typedef enum
+{
+	SYS_DIGITAL_FMT_BY_EDID = 0,
+	SYS_DIGITAL_FMT_RGB,
+	SYS_DIGITAL_FMT_RGB_EXPD,
+	SYS_DIGITAL_FMT_YCBCR_444,
+	SYS_DIGITAL_FMT_YCBCR_422,
+} DIGITAL_FMT_TYPE;
+
+typedef enum
+{
+	SYS_DIGITAL_AUD_BS = 0,
+	SYS_DIGITAL_AUD_LPCM,
+	SYS_DIGITAL_AUD_AUTO,		//by TV EDID setting
+}DIGITAL_AUD_TYPE;
+
+typedef struct
+{
+	unsigned char tvSystem;		// refer to enum TVSystem
+	unsigned char progressive;	// TRUE,FALSE
+	unsigned char tv_ratio;		// refer to TV_ASPECT_RATIO_TYPE
+	unsigned char display_mode;	// refer to DISPLAY_MODE_TYPE
+	
+	unsigned char scart_out;
+	unsigned char vdac_out[6];
+	unsigned char video_format;
+	
+	unsigned char audio_output;
+	unsigned char brightness;
+	unsigned char contrast;
+	unsigned char saturation;
+	
+	unsigned char sharpness;
+	unsigned char hue;
+	unsigned char resv[10];
+}ADF_BOOT_AVINFO;
+-->
+<baseparams>
+	<magic type="string" size="16">baseparams</magic>	
+	<avinfo>				
+		<tvSystem type="ubyte">LINE_1080_60</tvSystem>
+		<progressive type="ubyte">FALSE</progressive>
+		<tv_ratio type="ubyte">TV_ASPECT_RATIO_AUTO</tv_ratio>
+		<display_mode type="ubyte">DISPLAY_MODE_LETTERBOX</display_mode>
+		<scart_out type="ubyte">SCART_YUV</scart_out>
+		<vdac_out type="ubyte" size="6">VDAC_YUV_V,VDAC_YUV_U,VDAC_YUV_Y,VDAC_CVBS,VDAC_NULL,VDAC_NULL</vdac_out>
+		<video_format type="ubyte">SYS_DIGITAL_FMT_RGB</video_format>
+		<audio_output type="ubyte">SYS_DIGITAL_AUD_LPCM</audio_output>
+		<brightness type="ubyte">50</brightness>
+		<contrast type="ubyte">50</contrast>
+		<saturation type="ubyte">50</saturation>
+		<sharpness type="ubyte">5</sharpness>
+		<hue type="ubyte">50</hue>	
+		<snd_mute_gpio type="ubyte">80</snd_mute_gpio>
+		<snd_mute_polar type="ubyte">0</snd_mute_polar>
+		<hdcp_disable type="ubyte">1</hdcp_disable>
+		<rsv type="ubyte" size="7"></rsv>
+	</avinfo>
+	<sysinfo>
+		<sw_ver type="string" size="128">00000002</sw_ver>
+		<sw_md5 type="ubyte" size="128">1,2,3,4,5</sw_md5>
+		<sw_private type="ubyte" size="1024">9,8,7,6,5,4</sw_private>
+	</sysinfo>
+	<rsv type="ubyte" size="6144"></rsv>	
+</baseparams>
+

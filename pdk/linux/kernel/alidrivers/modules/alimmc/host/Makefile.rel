@@ -1,0 +1,1 @@
+obj-$(CONFIG_ALI_MMC) += alimmc_host.o

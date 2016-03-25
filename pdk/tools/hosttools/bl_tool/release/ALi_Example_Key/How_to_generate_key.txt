@@ -1,0 +1,7 @@
+1, Generate key for Sign use openssl (In standard Linux server)
+step1. generate PEM private key & public key, key length is 2048-bit
+	openssl genrsa -3 -out ext_key_pair.pem 2048
+step2. get DER public key from key pair
+	openssl rsa -pubout -inform PEM -in ext_key_pair.pem -outform D -out public.key
+step3. get DER key pair from PEM key pair
+	openssl rsa -inform PEM -in ext_key_pair.pem -outform D -out ext_key_pair.der	

@@ -1,0 +1,9 @@
+LOCAL_BASE=$(PDKAPI_DIR)
+BASE_DIR=${LOCAL_BASE}
+INC_DIR=${BASE_DIR}/src/inc
+INC_LINUX_DIR=$(LOCAL_BASE)/../kernel/install/include/kernel
+INC_ALIDRIVER_DIR = $(LOCAL_BASE)/../kernel/install/include/alidrivers
+LIB_DIR=${BASE_DIR}/install/obj
+REL_DIR=${BASE_DIR}/install/rel
+DDK_DIR=${BASE_DIR}/install/bin
+COMMON_DIR=${LOCAL_BASE}/../../alicommon

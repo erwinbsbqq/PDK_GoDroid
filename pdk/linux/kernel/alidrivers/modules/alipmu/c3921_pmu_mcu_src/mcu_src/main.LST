@@ -1,0 +1,111 @@
+C51 COMPILER V7.06   MAIN                                                                  10/27/2014 10:37:58 PAGE 1   
+
+
+C51 COMPILER V7.06, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: D:\SW_Install\C51\BIN\C51.EXE main.c LARGE BROWSE DEBUG OBJECTEXTEND
+
+stmt level    source
+
+   1          #include <dp8051xp.h>
+   2          #include <stdio.h>
+   3          #include "sys.h"
+*** WARNING C322 IN LINE 90 OF sys.h: unknown identifier
+   4          #include "ir.h"
+   5          #include "pannel.h"
+   6          #include "uart.h"
+   7          #include "pmu_rtc.h"
+   8          #include <intrins.h>
+   9          
+  10          //============================================================//
+  11          extern void exit_standby_status(unsigned char status0,unsigned char status1,unsigned char status2);
+  12          extern void mcu_disable_int(void);
+  13          unsigned char power_key_press_last = 0xa5;
+  14          unsigned char power_key_press_first = 0xa5;
+  15          unsigned char power_key_press_count =0;
+  16          
+  17          //============================================================//
+  18          void power_key_process(pRTC_TIMER rtc)
+  19          {
+  20   1              unsigned char gpio_in_status_reg;
+  21   1              unsigned char power_key_press;
+  22   1      
+  23   1              WRITE_BYTE(HAL_GPIO_EN,  READ_BYTE(HAL_GPIO_EN) |(1<<6));
+  24   1              WRITE_BYTE(HAL_GPIO_DIR_REG,  READ_BYTE(HAL_GPIO_DIR_REG) &(~(1<<6)));
+  25   1      
+  26   1              gpio_in_status_reg = READ_BYTE(HAL_GPIO_DI_REG);        // use PMU_CEC pin as power key
+  27   1      
+  28   1              power_key_press = (gpio_in_status_reg>>6) & 0x01;       // xpmu_gpio[6]
+  29   1      
+  30   1              if(power_key_press != power_key_press_last)
+  31   1              {
+  32   2                      //printf("1");
+  33   2                      power_key_press_last = power_key_press;
+  34   2                      power_key_press_count = 0;
+  35   2              }
+  36   1              else
+  37   1              {
+  38   2                      //printf("0");
+  39   2                      power_key_press_count ++;                                                       
+  40   2              }
+  41   1              if(power_key_press_count > 20)
+  42   1              {
+  43   2                      if(power_key_press_first == 0xa5)
+  44   2                      {
+  45   3                              power_key_press_first = power_key_press_last;
+  46   3                      }
+  47   2                      else if(power_key_press_first != power_key_press)
+  48   2                      {
+  49   3                              PMU_WRITE_BYTE(PRS_KEY_CFG+2,(PMU_READ_BYTE(PRS_KEY_CFG+2)|((1<<5)))); //clear interrupt
+  50   3                              main_cpu_get_time(rtc);
+  51   3                              mcu_disable_int();
+  52   3                              //HAL_MCU_GPIO_DISABLE_EN();
+  53   3                              hal_mcu_gpio_disable_en();
+  54   3                              exit_standby_status(0x50,0x4d,0x55);
+C51 COMPILER V7.06   MAIN                                                                  10/27/2014 10:37:58 PAGE 2   
+
+  55   3                              PMU_WRITE_BYTE(PRS_KEY_STANDBY_LED,GREEN_LED);//enter norm mode,light  green 
+  56   3                              while(1); //exit standby ,then hold mcu
+  57   3                      }
+  58   2              }
+  59   1              
+  60   1      }
+  61          
+  62          void main(void)
+  63          {
+  64   1              enum SHOW_TYPE show_type;
+  65   1              //init for normal mode
+  66   1              pmu_init();
+  67   1              
+  68   1              // wait mailbox interrupt come
+  69   1              while(g_standby_flag != ENTER_STANDBY);
+  70   1          
+  71   1              g_standby_flag = NORMAL_STATUS;
+  72   1              standby_init();
+  73   1              
+  74   1              //get show type from cpu
+  75   1              show_type=(enum SHOW_TYPE)(PMU_READ_BYTE(SHOW_TYPE_PAR));
+  76   1                      
+  77   1              while(1)
+  78   1              {
+  79   2                      //it will loop,until ir,pannel_key or time comeing          
+  80   2                      //power_key_process(&g_rtc);
+  81   2                      pannel_process(&g_rtc, show_type);  
+  82   2                      rtc_process(&g_rtc,&g_wake_rtc);
+  83   2                      ir_process(&g_rtc);
+  84   2              }
+  85   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    181    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      3       1
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,17 @@
+obj-$(CONFIG_ALI_MMC)  += core/
+obj-$(CONFIG_ALI_MMC)  += card/
+obj-$(CONFIG_ALI_MMC)  += host/
+
+.PHONY : clean
+clean:
+	@echo "mmc driver clean..."
+	@find . -name '*.o' | xargs rm -rf
+	@find . -name '*.cmd' | xargs rm -rf
+	@find . -name 'modules.order' | xargs rm -rf
+	@find . -name 'modules.builtin' | xargs rm -rf
+	@find . -name '*.mod.c' | xargs rm -rf
+
+.PHONY : cleanln
+cleanln:
+	@echo "mmc driver clean link file..."
+	@find . -type l |xargs rm -rf

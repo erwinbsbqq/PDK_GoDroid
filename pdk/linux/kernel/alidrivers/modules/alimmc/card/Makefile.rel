@@ -1,0 +1,7 @@
+#
+# Makefile for MMC/SD card drivers
+#
+
+obj-$(CONFIG_ALI_MMC) += alimmc.o
+
+EXTRA_CFLAGS += -O3 -Wall -DCONFIG_MMC_BLOCK_MINORS=16

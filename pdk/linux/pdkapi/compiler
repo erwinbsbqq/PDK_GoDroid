@@ -1,0 +1,60 @@
+export MKDIR = mkdir -p
+export RM = rm -f
+export RMDIR = rm -rf
+export CP = cp -af
+export CPDIR = cp -raf
+export SLINK = ln -sf
+export HLINK = ln -f
+export RMALL = $(RMDIR)
+export CPALL = $(CPDIR)
+export MKNOD = mknod
+export CHMOD = chmod
+export CHOWN = chown
+
+ifneq ($(findstring C3921, $(BOARD)),)
+	export DEV_CROSS_COMPILE_PATH = /opt/arm-linux-gnueabi
+	export CROSS_COMPILE   = $(DEV_CROSS_COMPILE_PATH)/bin/arm-linux-gnueabi-
+else
+	export MIPS_TOOLCHAIN = mips-4.4
+	export DEV_CROSS_COMPILE_PATH = /opt/$(MIPS_TOOLCHAIN)
+	export CROSS_COMPILE   = $(DEV_CROSS_COMPILE_PATH)/bin/mips-linux-gnu-
+endif
+
+export AR              = $(CROSS_COMPILE)ar
+export AS              = $(CROSS_COMPILE)as
+export LD              = $(CROSS_COMPILE)ld
+export CC              = $(CROSS_COMPILE)gcc
+export CXX             = $(CROSS_COMPILE)g++
+export CPP             = $(CROSS_COMPILE)cpp
+export NM              = $(CROSS_COMPILE)nm
+export STRIP           = $(CROSS_COMPILE)strip
+export SSTRIP          = $(CROSS_COMPILE)sstrip
+export OBJCOPY         = $(CROSS_COMPILE)objcopy
+export OBJDUMP         = $(CROSS_COMPILE)objdump
+export RANLIB          = $(CROSS_COMPILE)ranlib
+export SIZE            = $(CROSS_COMPILE)size
+
+ifneq ($(strip $(DEV_MIPS_UCLIBC)),)
+	ifneq ($(findstring C3921, $(BOARD)),)
+        	export COMMON_CFLAGS = -g -O1 -muclibc -EL -fPIC
+        	export COMMON_CXXFLAGS = -g -O1 -muclibc -EL -fPIC
+		export COMMON_LDFLAGS = -g -O1 -EL -fPIC
+	else
+		export COMMON_CFLAGS = -g -O1 -muclibc -EL -fPIC -mips32r2
+        	export COMMON_CXXFLAGS = -g -O1 -muclibc -EL -fPIC -mips32r2
+        	export COMMON_LDFLAGS = -g -O1 -EL -fPIC -mips32r2
+        endif
+else
+	ifneq ($(findstring C3921, $(BOARD)),)
+        	export COMMON_CFLAGS = -g -O1 -EL -fPIC
+        	export COMMON_CXXFLAGS = -g -O1 -EL -fPIC
+		export COMMON_LDFLAGS = -g -O1 -EL -fPIC
+	else
+		export COMMON_CFLAGS = -g -O1 -EL -fPIC -mips32r2
+        	export COMMON_CXXFLAGS = -g -O1 -EL -fPIC -mips32r2
+        	export COMMON_LDFLAGS = -g -O1 -EL -fPIC -mips32r2
+        endif
+endif
+
+export SUPPORT_DYNAMIC_LIBS = y
+

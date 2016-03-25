@@ -1,0 +1,5 @@
+#
+#Makefile for ali soc dirver
+#
+obj-$(CONFIG_ALI_SOC) += alisoc.o
+

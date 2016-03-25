@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+#define MEDIA_BLOCK_MAXCOUNT 8
+#define MEDIA_PLAYLIST_MAXCOUNT 64
+
+struct block_header
+{
+	unsigned int block_offset;
+	unsigned int block_len;
+	unsigned int media_type;
+	unsigned int play_time;	
+};
+
+typedef struct
+{
+	char magic[16];		// bootmediahdr
+	unsigned short media_block_count;
+	unsigned short play_count;                                       
+	unsigned char play_list[MEDIA_PLAYLIST_MAXCOUNT]
+	struct block_header block_hdr[MEDIA_BLOCK_MAXCOUNT];
+	unsigned char reserve[44];
+}BOARD_BOOTMEDIAINFO;   /* 256 bytes */
+-->
+<bootmedia>
+	<head>
+		<magic type="string" size="16">adfbootmedia</magic>	
+	</head>
+	<body>
+		<media>
+			<name type="file" media_type="jpeg">boards/C3921_ALIDROID/flashfiles/Logo.jpg</name>
+			<duration>10000</duration>
+		</media>		
+	</body>
+</bootmedia>

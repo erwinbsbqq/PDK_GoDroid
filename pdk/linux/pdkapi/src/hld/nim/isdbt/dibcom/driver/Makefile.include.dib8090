@@ -1,0 +1,4 @@
+DIBCOM_DRIVER_OBJECTS += sip/dibx09x/dib8090.o
+
+HAVE_DIB8090 = 1
+

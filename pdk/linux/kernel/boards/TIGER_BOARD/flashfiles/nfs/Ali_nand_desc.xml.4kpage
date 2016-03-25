@@ -1,0 +1,43 @@
+<?xml version="1.0" standalone="no" ?>
+<!-- Example: ALI UPG Descriptor -->
+<Descriptor>
+	<ali_ini_head>
+		<SYSINI FlashTable="NandList_v2.ran" ALI_CHIP="C3921"/>		
+		<ALI-PRIVATE-PARTITION0 ALI_PRIVATE_RESERVED_BLOCK="0x02" SecondCpu="" size="0x200000"/>		
+		<SYSTEM-START-ADDRESS TDS_ADDR="0x400" START_ADDR="0x83C00000"/>		
+		<STARTUP-FILE>
+			<DRAM>sdram_3921_BGA_1GB_1333Mbps.abs</DRAM>
+			<UPDATER>nand_updater_loader.axf.bin</UPDATER>
+			<LOADER>u-boot.bin</LOADER>
+		</STARTUP-FILE>
+	</ali_ini_head>
+
+	<sys_info desc="M3921 firminfo">
+        <stbid SN="AAAABBCCCDDEE0112233445566" MAC="11:22:33:44:55:66"/>
+        <hwinfo OUI="0x1008" hw_model="00000000" hw_ver="0x00000001"/>
+        <swinfo sw_model="00000000" sw_ver="0x00000002"/>
+    </sys_info>
+	<!-- nfs_enable -->
+	<!-- 0x00: nfs disable -->
+	<!-- 0x01: nfs enable -->
+	<!-- DHCP_enable -->
+	<!-- 0x00: DHCP disable, DNS enable, must config board_net_config -->
+	<!-- 0x01: DHCP enable, need not config board_net_config -->
+	<NFS_config NFS_enable="1" DHCP_enable="0">		
+		<server IP="192.168.1.2" path="/home/Linge/work/ALI_SDK5.0/rabbit/images/fs"/>			
+		<board IP="192.168.1.3" gateway="192.168.1.1" netmask="255.255.255.0"/>
+	</NFS_config>
+	
+	<cmdline param="mem=1024M"/>
+
+	<!-- flash_type: nand/nor -->
+	<!-- level: private/protected/public -->
+	<!-- fs_type: ""/initrd/yaffs2/cramfs -->		
+	<part_loop>
+		<part name="boot" flash_type="nand" fs_type="" size="0x400000" file="" ver="00000001" level="protected" local="fixed"/>
+		<part name="see" flash_type="nand" fs_type="" size="0x400000" file="see_bin.ubo" ver="00000001" level="public" local="unfixed"/>
+		<part name="kernel" flash_type="nand" fs_type="" size="0x800000" file="main_bin.ubo" ver="00000001" level="public" local="unfixed"/>
+		<part name="ae" flash_type="nand" fs_type="" size="0x400000" file="ae_bin.ubo" ver="00000001" level="public" local="unfixed"/>				
+	</part_loop>
+	
+</Descriptor>

@@ -1,0 +1,43 @@
+# To build modules outside of the kernel tree, we run "make"
+# in the kernel source tree; the Makefile these then includes this
+# Makefile once again.
+# This conditional selects whether we are being included from the
+# kernel Makefile or not.
+
+EXTRA_CFLAGS += -DCONFIG_LITTLE_ENDIAN
+CFLAGS_MODULE += -D__ALI_LINUX_KERNEL__
+ARCH:=arm
+CROSS_COMPILE:= /opt/arm-linux-gnueabi/bin/arm-linux-gnueabi-
+KVER:= 3.4.0
+KSRC:= ../../../../kernel/kernel/build/linux-linaro-3.4-rc3
+
+ifeq ($(KERNELRELEASE),)
+
+    # Assume the source tree is where the running kernel was built
+    # You should set KERNELDIR in the environment if it's elsewhere
+    KERNELDIR ?= /lib/modules/$(shell uname -r)/build
+    # The current directory is passed to sub-makes as argument
+    PWD := $(shell pwd)
+
+modules:
+	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd)  modules
+
+modules_install:
+	$(MAKE) -C $(KERNELDIR) M=$(PWD) modules_install
+
+clean:
+	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions *.builtin *.order *.symvers
+
+.PHONY: modules modules_install clean
+
+else
+    # called from kernel build system: just declare what our modules are
+    obj-m = alidmx.o 
+    alidmx-objs = dmx_data_buf.o dmx_pid_flt.o dmx_data_engine.o dmx_hw_interface.o \
+                  dmx_hw_from_m37.o dmx_hw_from_user.o dmx_hw_from_see.o \
+			      dmx_ts_flt.o dmx_sec_flt.o dmx_pes_flt.o dmx_linux_interface.o \
+			      dmx_see_interface.o dmx_init.o dmx_stream.o dmx_mutex.o dmx_pcr_flt.o \
+			      dmx_linux_interface_legacy.o dmx_channel_legacy.o dmx_ts_in_ram_stream.o \
+			      dmx_instream_ram_legacy.o dmx_statistics.o dmx_subt_if.o
+endif
+

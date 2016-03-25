@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+type: string,mac,file,uint,int,ushort,short,ubyte,byte
+
+typedef struct
+{
+	UINT8 hdcp[286];
+	UINT16 hdcp_disable;
+}HDMI_INFO;	/* 288 bytes */
+
+#define STB_FIRMINFO_SN_LEN 			64
+#define STB_FIRMINFO_MAC_LEN 			8
+typedef struct
+{
+	UINT8 sn[STB_FIRMINFO_SN_LEN];
+	UINT8 mac[STB_FIRMINFO_MAC_LEN];
+	UINT8 mac2[STB_FIRMINFO_MAC_LEN];
+	UINT8 mac3[STB_FIRMINFO_MAC_LEN];
+	UINT8 mac4[STB_FIRMINFO_MAC_LEN];
+	UINT32 oui;
+	UINT8 hw_ver[128];
+	UINT8 rsv[1836];	
+}FIRMWARE_INFO;	 /* 2048 bytes */
+
+
+typedef struct
+{
+	/* 0 bytes */
+	UINT8 magic[16];	// deviceinfo
+	/* 16 bytes */
+	HDMI_INFO hdmi;	
+	/* 304 bytes */
+	FIRMWARE_INFO firmware;
+}DEVICE_INFO;
+
+-->
+<deviceinfo>
+	<magic type="string" size="16">deviceinfo</magic>
+	<hdmi>
+		<hdcp type="file" size="288"></hdcp>
+	</hdmi>
+	<firmware>		
+		<sn type="string" size="64">sn</sn>
+		<mac1 type="mac">DE:AD:BE:EF:01:01</mac1>
+		<mac2 type="mac">12:22:33:44:55:66</mac2>
+		<mac3 type="mac">14:22:33:44:55:66</mac3>
+		<mac4 type="mac">16:22:33:44:55:66</mac4>
+		<oui type="uint">0x1008</oui>
+		<hw_ver type="string" size="128">hw0.1.0</hw_ver>
+		<rsv type="ubyte" size="1820"></rsv>
+	</firmware>
+</deviceinfo>

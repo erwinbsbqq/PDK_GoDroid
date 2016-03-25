@@ -1,0 +1,7 @@
+#
+# Makefile for the ali pm driver
+#
+
+obj-$(CONFIG_ALI_PM)          += alipm.o
+alipm-y := ali_pm.o
+

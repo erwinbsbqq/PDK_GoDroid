@@ -1,0 +1,5 @@
+---- i2c_gpio_read Matches (4 in 1 files) ----
+Pannel.c:INT32 i2c_gpio_read(UINT32 id, UINT8 slv_addr, UINT8 *data, UINT32 len);
+Pannel.c:static UINT8 i2c_gpio_read(UINT8 slv_addr, UINT8 *dat, int len)
+Pannel.c:		//PMU_PRINTF("i2c_gpio_read err\n");
+Pannel.c:	i2c_gpio_read(KEY_ADDR, &pan_key, 1);

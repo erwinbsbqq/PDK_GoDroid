@@ -1,0 +1,125 @@
+/*
+ * arch/arm/mach-ali3921/include/mach/entry-macro.S
+ *
+ * Low-level IRQ helper macros for Marvell Dove platforms
+ *
+ * This file is licensed under the terms of the GNU General Public
+ * License version 2.  This program is licensed "as is" without any
+ * warranty of any kind, whether express or implied.
+ */
+
+
+#include <mach/ali-3921.h>
+/*
+#define GIC_CPU_BASE BASE_ADDR+0x100
+#define HAVE_GET_IRQNR_PREAMBLE
+#include <asm/hardware/entry-macro-gic.S>
+	.macro disable_fiq
+	.endm
+	
+	.macro arch_ret_to_user, tmp1, tmp2
+	.endm
+	
+	.macro get_irqnr_preamble, base, tmp
+	ldr \base, =(GIC_CPU_BASE)
+	.endm
+*/
+
+#define SOC_IRQ_BASE_ADDR 0xFF800030
+
+	.macro  disable_fiq
+	.endm
+
+	.macro  arch_ret_to_user, tmp1, tmp2
+	.endm
+
+	.macro  get_irqnr_preamble, base, tmp
+	.endm
+/*
+	.macro  get_irqnr_and_base, irqnr, irqstat, base, tmp
+	ldr  \base, =(SOC_IRQ_BASE_ADDR)
+	ldr  \irqnr, [\base, #0]
+	cmp  \irqnr, #0
+	beq 11234f
+67789:
+	mov \irqnr, #0x2B
+	b 43211f
+11234:		
+	ldr \base, =(BASE_ADDR+0x100)
+	ldr \irqnr, [\base, #0x0C]
+43211:	
+	cmp \irqnr, #0xFF
+	.endm
+*/
+	
+	.macro  get_irqnr_and_base, irqnr, irqstat, base, tmp
+	ldr   \base, =(BASE_ADDR+0x100)
+	ldr    \irqnr, [\base, #0x0C] 
+	.endm
+	
+	
+	
+
+ /* 
+#include <mach/hardware.h>
+#include <asm/hardware/entry-macro-gic.S>		
+
+	.macro  disable_fiq		
+	.endm		
+
+	.macro  arch_ret_to_user, tmp1, tmp2		
+	.endm
+
+	.macro  get_irqnr_and_base, irqnr, irqstat, base, tmp
+	ldr   \base, =(SOC_BASE_ADDR)
+	ldr    \tmp, [\base, #0x30] 
+	and	 \tmp, \tmp, #0x20000
+	beq	 67789f
+	ldr   \base, =(BASE_ADDR+0x100)
+	ldr    \irqnr, [\base, #0x0C] 
+	b	11234f
+67789:	
+	ldr	\irqnr, =(0x33)
+11234:
+	.endm	
+
+		teqeq \tmp, #0x0
+	beq	 67789f
+
+	67789:	
+	ldr   \base, =(SOC_BASE_ADDR)
+	ldr    \irqnr, [\base, #0x30] 
+	cmp \irqnr, #0x10000
+	beq  43321f
+	bne  11234f
+43321:
+	ldr	\irqnr, =(0x33)
+
+		.macro  get_irqnr_and_base, irqnr, irqstat, base, tmp
+	ldr   \base, =(SOC_BASE_ADDR)
+	ldr    \irqnr, [\base, #0x30] 
+	cmp  \irqnr, #0x10000
+	beq  101f
+	ldr   \base, =(BASE_ADDR+0x100)
+	ldr    \irqnr, [\base, #0x0C] 
+	cmp  \irqnr, #0x1B
+101:	
+	.endm
+
+		.macro  get_irqnr_and_base, irqnr, irqstat, base, tmp
+	ldr   \base, =(SOC_BASE_ADDR)
+	ldr    \irqnr, [\base, #0x30] 
+	cmp  \irqnr, #0x10000
+	beq   101f
+	ldr   \base, =(BASE_ADDR+0x100)
+	ldr    \irqnr, [\base, #0x0C] 
+101:		
+	.endm
+
+
+	.macro  get_irqnr_and_base, irqnr, irqstat, base, tmp
+	ldr   \base, =(BASE_ADDR+0x100)
+	ldr    \irqnr, [\base, #0x0C] 
+	.endm
+	
+*/

@@ -1,0 +1,236 @@
+2014-12-23  ali_hdmi_ver_2014_1223_1
+1. Modify CB function for multiprocess
+
+2014-09-05 ali_hdmi_ver_2014_0905_1
+1. include AS solution
+2. M3515B demo version, ARM and MIPS coexist
+
+2014-08-01 ali_hdmi_ver_2014_0801_1
+1. Modify HDMI 3D phy setting
+2. When DD+ stream and BS out, get audio data through SPO not DDPSPO 
+
+2014-07-08 ali_hdmi_ver_2014_0708_1
+1. Add EDID information for deep color
+2. Modify deep color flow, sync with 3821
+
+2014-05-15 ali_hdmi_ver_2014_0515_1
+1. Add Link_Status parameter HDMI_STATUS_LINK
+2. Adjust Link_Status enum
+
+2014-05-06 ali_hdmi_ver_2014_0506_1
+1. Turn off phy phy when HDCP fail for C3921
+2. In the BootMedia kernel, read EDID when plug-in
+
+2014-05-02 ali_hdmi_ver_2014_0502_1
+1. callback function for plug-in, plug-out, edid ready and cec receiver
+2. Fixed HDMI kernel send message through netlink
+3. Fixed CEC interrupt handle condition
+
+2014-04-14 ali_hdmi_ver_2014_0414_1
+1. Modify hdcp flow for C3921 bootMedia (ALIDROID)
+
+2014-04-03 ali_hdmi_ver_2014_0410_1
+1. Modify control flow for C3921 bootMedia
+
+2014-04-03 ali_hdmi_ver_2014_0403_1
+1. Modify HDCP get key flow
+
+2014-03-21 ali_hdmi_ver_2014_0321_1
+1. C3921 DCN driver done
+
+2014-03-07 ali_hdmi_ver_2013_0307_1
+1. Add API for hdmi phy clock onoff
+2. Add API for hdmi color space
+
+2013-09-27 ali_hdmi_ver_2013_0927_1
+1. Modify 3D setting
+2. Add 4Kx2K feature
+3. Add S3921 file system
+
+2013-09-06 ali_hdmi_ver_2013_0906_1
+1. Change SB I2C SEL when config 3d tx phy
+
+2013-08-30 ali_hdmi_ver_2013_0830_1
+1. Add S3921 HDMI 3D VSI_IFM
+
+2013-08-12 ali_hdmi_ver_2013_0822_1
+1. Add S3921 HDMI deep color feature and setting
+2. Add get/set deep color API
+3. sync 3701C issue, IPC and memory leak
+
+2013-08-12 ali_hdmi_ver_2013_0812_1
+1. workaround S3921 SD InfoFrame issue
+
+2013-08-01 ali_hdmi_ver_2013_0801_1
+1. Add 3921 HDMI 3D tx phy setting
+
+2013-05-22 ali_hdmi_ver_2013_0522_1
+1. Add EDID information API
+   api_hdmi_get_edid_manufacturer
+   api_hdmi_get_edid_monitor
+
+2013-04-23 ali_hdmi_ver_2013_0423_1
+1. Remove PORD detect in main code
+2. APP kill process cause hdmi no output issue
+3. Audio out recover to AUTO, BS and LPCM
+
+2013-04-01 ali_hdmi_ver_2013_0401_1
+1. Change EDID version check
+2. Add 3D_Present API
+
+2013-02-06 ali_hdmi_ver_2013_0206_1
+1. PHILIPS TV issue
+   Modify AV unmute count to 4 from 2 
+
+2013-01-28 ali_hdmi_ver_2013_0128_1
+1. Modify HDMI thread timeout
+2. Add new UDI APIs
+   api_hdmi_audio_set_onoff
+   api_hdmi_audio_get_onoff
+
+2012-12-07 ali_hdmi_ver_2012_1207_1
+1. Modify hdmi_send_edid_ready_msg(),hdmi_send_plgin_msg(),hdmi_send_plugout_msg(),hdmi_send_cec_msg().
+   for system crash issue.
+
+2012-11-30 ali_hdmi_ver_2012_1130_1
+1. Modify hdmi cec and cec call back func of hld layer.
+2. Add VSI packet control for 3D but mask.
+3. Modify hdmi_send_msg and send message for call back func.
+
+
+2012-11-06 ali_hdmi_ver_2012_1106_1
+1. Modify hdmi driver close handle for ZHA
+2. Modify hdmi_proc_set_avmute()
+3. Modify active_format_aspect_ratio setting.
+
+2012-10-12 ali_hdmi_ver_2012_1024_1
+1. Add a new variable, hdmi_sw_onoff_from_user for CoShip UDI vpo close test
+2. Add IOCTRL case HDMI_IOCT_HDCP_SET_KEY_INFO for CoShip UDI.
+
+2012-10-12 ali_hdmi_ver_2012_1012_1
+1. Add header file description for hdmi APIs
+
+2012-10-09 ali_hdmi_ver_2012_1009_1 
+1. Modify UDI APIs 
+   api_hdmi_reg_callback(...)
+   api_hdmi_del_callback(...)
+   hdmi_monitor_by_polling(...)
+2. Modify hdmi_proc_state_update(...) 
+   for audio enable when hdmi turn on.
+
+2012-10-05 ali_hdmi_ver_2012_1005_1 
+Sync driver with 3616 20121005 ver. 
+   Modify hdmi_hld.c file.
+   Modify new APIs for CSUDI of CoShip.
+   api_hdmi_get_dev_count(...)
+   api_hdmi_set_vendor_name(...)
+   api_hdmi_set_product_desc(...)   
+   api_hdmi_get_vendor_name(...)
+   api_hdmi_get_product_desc(...)
+   api_hdmi_get_link_status(...)
+   api_hdmi_reg_callback(...)   
+   api_hdmi_del_callback(...)
+
+2012-09-28 ali_hdmi_ver_2012_09_28_1
+Modify new hdmi APIs for CSUDI of CoShip.
+1. Delete 
+   api_set_hdmi_property(...)
+   api_get_hdmi_property(...)
+   Add 
+   api_set_hdmi_vendor_name(...)
+   api_set_hdmi_product_desc(...)
+   api_get_hdmi_vendor_name(...)
+   api_get_hdmi_product_desc(...)
+2. Modify 
+   api_hdmi_add_callback(...)
+   api_hdmi_del_callback(...)
+
+2012-09-26 ali_hdmi_ver_2012_09-26_1
+Add new hdmi APIs for CSUDI of CoShip.
+1. Modify hdmi_hld.c file. Add new APIs for CSUDI of CoShip.
+   api_get_hdmi_count(...)
+   api_set_hdmi_property(...)
+   api_get_hdmi_property(...)
+   api_get_hdmi_link_status(...)
+   api_hdmi_add_callback(...)
+   api_hdmi_del_callback(...)
+2. Modify hdmi_dev.h file. Modify hdmi call back func.
+3. Modify hdmi_api.h file.  Add new APIs for CSUDI of CoShip.
+4. Modify hdmi_io.h file. Add ioctrl case.
+5. Modify ali_hdmi.c file. Add ioctrl case.
+6. Modify hdmi_hdcp_load_keys_to_hardware of hdmi_hdcp.c file.
+7. Modify hdmi_information.h file. vendor_name size 7->8 bytes.
+8. Modify hdmi_proc.c file. 
+   Add EDID condition for DVI mode issue when I2C SDAT fail. 
+   Add hdmi_proc_spd_update(...) func
+   Add hotplug in/out event for callback func.
+9. Modify hdmi_proc.h file.  Add SPD_DATA structure;
+
+
+2012-09-13 ali_hdmi_ver_2012_09-13_1
+1. Add ali_hdmi_set_bootloader_param(...) func.
+
+2012-09-07 ali_hdmi_ver_2012_09-07_1
+1. Remove audio clock source patch of set_audio_info_to_hdmi()func.
+
+2012-09-03 ali_hdmi_ver_2012_09-03
+1. Add hdmi phy setting APIs
+   hdmi_set_ldo_sel(...)
+   hdmi_set_pll_sel(...)
+2. Modify hdmi_proc_hardware_init func of hdmi_proc.c for hdmi phy setting.
+
+2012-08-14 ali_hdmi_ver_2012_08-14
+1. Modify ali_hdmi_ioctl func of ali_hdmi.c
+   Add IOCTL cases, HDMI_IOCT_SET_VID_RES and HDMI_IOCT_GET_VID_RES, for CEC..
+
+2012-07-18 ali_hdmi_ver_2012_07-18
+1. Fix Pangoo tv issue. Add hdmi_hdcp_validate_ksv to check if AKSV are valid.
+2. Add CEC ack siganl and re-try done check.
+
+2012-05-29 ali_hdmi_ver_2012_05-29
+1. Add hdcp on off API to change module parameter.
+2. remove hdcp KEY
+
+2012-05-16 ali_hdmi_ver_2012_05-16
+1. Modify hdcp process.
+2. Add hdmi_edid_clear(...) to hdmi_proc_get_parse_edid(...)
+   EDID data is not cleared when hdmi cable replug in.
+3. Modify driving current setting for s version chip.
+
+2012-05-04 ali_hdmi_ver_2012_05-04
+1. Modify hdcp issue, Add i2c R0_Rx read retry.
+2. Modify set_audio_info_to_hdmi.  audio params are set by audio.
+3. Add hdmi HLD layer
+
+2012-04-30 ali_hdmi_ver_2012_04_30
+1. Remove test code. alsa2hdmi_info->user_audio_out = AUD_USR_LPCM_OUT;
+2. Modify hdcp authenication workqueue flow. add a cancel work flow.
+3. Modify Hot plug detect for debounce.
+
+2012-04-18 ali_hdmi_ver_2012_04_18
+1. Add current driving adjustment when video format change.
+2. Add B_PORD_MASK bit of HDMI_REG_CFG6
+
+2012-04-13 ali_hdmi_ver_2012_04_13  
+1. Fix TMDS PORD interrupt too frequent at some TVs standby mode.
+   CHANGHONG TV 3DTV24660i.
+2. Add AVMute at VBLK.
+
+2012-03-29 ali_hdmi_ver_2012_03_29  
+For 3701C hdmi no output when core volt is too low.
+register 0xb8000400[12:8] default is 0x00.
+
+2012-03-26 ali_hdmi_ver_2012_03_26  
+  1. Add hdmi hdcp and cec apis.
+  	bool ali_hdmi_get_hdcp_onoff(void);
+	void ali_hdmi_set_hdcp_onoff(bool bOnOff);
+	bool ali_hdmi_get_cec_onoff(void);
+	void ali_hdmi_set_cec_onoff(bool bOnOff);
+	bool ali_hdmi_set_logical_address(unsigned char logical_address);
+	unsigned char ali_hdmi_get_logical_address(void);
+	bool ali_hdmi_cec_transmit(unsigned char* message, unsigned char message_length);
+     
+
+2012-03-20 ali_hdmi_ver_2012_03_20  
+  1. Add and test hdcp driver.
+  

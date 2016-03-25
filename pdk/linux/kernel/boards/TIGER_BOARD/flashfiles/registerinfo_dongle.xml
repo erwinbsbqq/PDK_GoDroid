@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+type: string,mac,file,uint,int,ushort,short,ubyte,byte
+
+#define MAX_REGISTER_NUM		64
+#define REGISTER_VALID_MAGIC		0x78AC88EF
+
+struct REGISTER_SETTING
+{
+	unsigned int magic;
+	unsigned int addr;
+	unsigned int bits_offset;
+	unsigned int bits_size;
+	unsigned int bits_value;
+};
+
+typedef struct
+{	
+	unsigned int valid_count;
+	struct REGISTER_SETTING unit[MAX_REGISTER_NUM];
+}ADF_REGISTERINFO;
+
+
+//if u want to add some pinmux setting, here is a sample
+<register>
+	<magic type="uint">0x88AC88EF</magic>
+	<addr type="uint">0x18028420</addr>
+	<bits_offset type="uint">23</bits_offset>
+	<bits_size type="uint">1</bits_size>	
+	<bits_value type="uint">1</bits_value>
+</register>
+
+
+adrdbg -ap -wr32 0x18000064 0x00000001
+adrdbg -ap -wr32 0x18000090 0xa0080001
+adrdbg -ap -wr32 0x18000078 0x20200044 => 396MHz
+adrdbg -ap -wr32 0x18000064 0x00000000
+adrdbg -ap -wr32 0x18000090 0xa0080000
+-->
+
+<registerinfo>
+	<MAX_REGISTER_NUM type="uint">64</MAX_REGISTER_NUM>
+
+	<!-- see/ae clk OFF __REG32ALI(0x18000078) = 0x20200044;-->
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000078</addr>
+		<bits_offset type="uint">21</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>	
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000078</addr>
+		<bits_offset type="uint">29</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>	
+
+	
+	<!--RXADC OFF __REG32ALI(0x18028420) = 0x00000f00;-->
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18028420</addr>
+		<bits_offset type="uint">8</bits_offset>
+		<bits_size type="uint">4</bits_size>	
+		<bits_value type="uint">15</bits_value>
+	</register>
+
+	<!--RXALL_PD OFF __REG32ALI(0x180000b4) = 0x00001000;-->
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x180000b4</addr>
+		<bits_offset type="uint">12</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>
+
+	<!--ELB_EMB_OFF  __REG32ALI(0x18000060) = 0x00010386;-->
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000060</addr>
+		<bits_offset type="uint">1</bits_offset>
+		<bits_size type="uint">2</bits_size>	
+		<bits_value type="uint">3</bits_value>
+	</register>	
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000060</addr>
+		<bits_offset type="uint">7</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000060</addr>
+		<bits_offset type="uint">8</bits_offset>
+		<bits_size type="uint">2</bits_size>	
+		<bits_value type="uint">3</bits_value>
+	</register>
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000060</addr>
+		<bits_offset type="uint">16</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>
+
+	<!--I2SO_2 OFF __REG32ALI(0x18000090) = 0xa00830C0;-->
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000090</addr>
+		<bits_offset type="uint">5</bits_offset>
+		<bits_size type="uint">3</bits_size>	
+		<bits_value type="uint">7</bits_value>
+	</register>
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000090</addr>
+		<bits_offset type="uint">8</bits_offset>
+		<bits_size type="uint">4</bits_size>	
+		<bits_value type="uint">15</bits_value>
+	</register>	
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000090</addr>
+		<bits_offset type="uint">12</bits_offset>
+		<bits_size type="uint">2</bits_size>	
+		<bits_value type="uint">3</bits_value>
+	</register>	
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000090</addr>
+		<bits_offset type="uint">19</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>	
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000090</addr>
+		<bits_offset type="uint">29</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>	
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000090</addr>
+		<bits_offset type="uint">31</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>
+
+	<!--GMAC/MAC/DSC OFF __REG32ALI(0x18000064)= 0x00941400;-->
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000064</addr>
+		<bits_offset type="uint">10</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000064</addr>
+		<bits_offset type="uint">12</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>	
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000064</addr>
+		<bits_offset type="uint">18</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>		
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000064</addr>
+		<bits_offset type="uint">20</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>	
+	
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18000064</addr>
+		<bits_offset type="uint">23</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>	
+	
+	
+	<!--ADAC: 0x180020d4: 0x6F0083C1-->
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x180020d4</addr>
+		<bits_offset type="uint">4</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>	
+
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x180020d4</addr>
+		<bits_offset type="uint">6</bits_offset>
+		<bits_size type="uint">9</bits_size>	
+		<bits_value type="uint">511</bits_value>
+	</register>
+	
+	<!--Enet power down-->
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0X1800006C</addr>
+		<bits_offset type="uint">0</bits_offset>
+		<bits_size type="uint">2</bits_size>	
+		<bits_value type="uint">3</bits_value>
+	</register>	
+
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0X1800006C</addr>
+		<bits_offset type="uint">7</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>	
+	
+	<!-- Digital PLL 6/7 Power off-->
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0X180004b0</addr>
+		<bits_offset type="uint">31</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">0</bits_value>
+	</register>
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0X180004bc</addr>
+		<bits_offset type="uint">31</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">0</bits_value>
+	</register>		
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0X180004c8</addr>
+		<bits_offset type="uint">31</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">0</bits_value>
+	</register>	
+	
+	<!--VDAC: 0x18008084: 0xB48f0f00
+	0XB8008084[8]   -> 1
+	0XB8008084[9]   -> 1
+	0XB8008084[10] ->1
+	0XB8008084[11] ->1
+	0XB8008084[31] -> 1
+	0XB8008084[19:16] set 4'b1111
+	-->
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18008084</addr>
+		<bits_offset type="uint">8</bits_offset>
+		<bits_size type="uint">4</bits_size>	
+		<bits_value type="uint">15</bits_value>
+	</register>	
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18008084</addr>
+		<bits_offset type="uint">31</bits_offset>
+		<bits_size type="uint">1</bits_size>	
+		<bits_value type="uint">1</bits_value>
+	</register>
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x18008084</addr>
+		<bits_offset type="uint">16</bits_offset>
+		<bits_size type="uint">4</bits_size>	
+		<bits_value type="uint">15</bits_value>
+	</register>
+	<register>
+		<magic type="uint">0x78AC88EF</magic>
+		<addr type="uint">0x1800007c</addr>
+		<bits_offset type="uint">4</bits_offset>
+		<bits_size type="uint">2</bits_size>	
+		<bits_value type="uint">3</bits_value>
+	</register>
+	
+</registerinfo>
+

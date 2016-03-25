@@ -1,0 +1,49 @@
+/*
+ * arch/arm/mach-ali3921/include/mach/ali-s3921.h
+ *
+ * Generic definitions for ALi S3921 SoC
+ *
+ * This file is licensed under the terms of the GNU General Public
+ * License version 2.  This program is licensed "as is" without any
+ * warranty of any kind, whether express or implied.
+ */
+#include <asm/pgtable.h>
+
+#ifndef __ASM_ARCH_ALI_S3921_H
+#define __ASM_ARCH_ALI_S3921_H
+
+/* Physical/Virtual base addresses mapping */
+#define PHYS_SYSTEM			(0x18000000)	// ALi Soc System IO 		0x1800_0000 - 0x1800_0FFF (4K)
+#define PHYS_SOUTHBRIDGE	(0x18018000)	// ALi Soc South Bridge IO 	0x1801_8000 - 0x1801_9FFF (8K) 
+#define PHYS_ARM_PERIPHBASE	(0x1BF00000)	// ARM PERIPHBASE Address for Timer, Watchdogs, Interrupt Controller, SCU register. (8K)
+											// The PERIPHBASE value should read from CP15 c15 register. 
+
+#define SIZE_SYSTEM			SZ_4K
+#define SIZE_SOUTHBRIDGE	SZ_8K
+#define SIZE_ARM_PERIPHBASE	SZ_8K
+
+#define VIRT_SYSTEM			(VMALLOC_END - SIZE_SYSTEM)
+#define VIRT_SOUTHBRIDGE	(VIRT_SYSTEM - SIZE_SOUTHBRIDGE)
+#define VIRT_ARM_PERIPHBASE	(VIRT_SOUTHBRIDGE - SIZE_ARM_PERIPHBASE)
+
+/* Soc System IO Address Mapping */
+#define SYS_CHIP_VER		(VIRT_SYSTEM + 0x00)
+#define SYS_INT_POL_SELECT1	(VIRT_SYSTEM + 0x28)
+#define SYS_INT_POL_SELECT2	(VIRT_SYSTEM + 0x2C)
+#define SYS_INT_STATUS1		(VIRT_SYSTEM + 0x30)
+#define SYS_INT_STATUS2		(VIRT_SYSTEM + 0x34)
+#define SYS_INT_ENABLE1		(VIRT_SYSTEM + 0x38)
+#define SYS_INT_ENABLE2		(VIRT_SYSTEM + 0x3C)
+
+/* South Birdge Address Mapping */
+#define UART1_BASE_ADDR		(VIRT_SOUTHBRIDGE + 0x300)
+#define UART2_BASE_ADDR		(VIRT_SOUTHBRIDGE + 0x600)
+
+/* ARM CPU Peripherial Address Mapping */
+#define A9_MPCORE_SCU		(VIRT_ARM_PERIPHBASE + 0x0000)
+#define A9_MPCORE_GIC_CPU	(VIRT_ARM_PERIPHBASE + 0x0100)
+#define A9_MPCORE_GIT		(VIRT_ARM_PERIPHBASE + 0x0200)
+#define A9_MPCORE_TWD		(VIRT_ARM_PERIPHBASE + 0x0600)
+#define A9_MPCORE_GIC_DIST	(VIRT_ARM_PERIPHBASE + 0x1000)
+
+#endif

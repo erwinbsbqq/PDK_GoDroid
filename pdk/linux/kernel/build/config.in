@@ -1,0 +1,639 @@
+#
+# For a description of the syntax of this configuration file,
+# see Documentation/kbuild/config-language.txt.
+#
+
+#****************************************************************************
+#
+#  Copyright (c) 2000-2009 ALi Corporation
+#
+#  This program is the proprietary software of ALi Corporation and/or
+#  its licensors, and may only be used, duplicated, modified or distributed
+#  pursuant to the terms and conditions of a separate, written license
+#  agreement executed between you and ALi (an "Authorized License").
+#  Except as set forth in an Authorized License, ALi grants no license
+#  (express or implied), right to use, or waiver of any kind with respect to
+#  the Software, and ALi expressly reserves all rights in and to the
+#  Software and all intellectual property rights therein.  IF YOU HAVE NO
+#  AUTHORIZED LICENSE, THEN YOU HAVE NO RIGHT TO USE THIS SOFTWARE IN ANY WAY,
+#  AND SHOULD IMMEDIATELY NOTIFY BROADCOM AND DISCONTINUE ALL USE OF THE
+#  SOFTWARE.
+#  SOFTWARE.
+#
+#  Except as expressly set forth in the Authorized License,
+#
+#  1.     This program, including its structure, sequence and organization,
+#  constitutes the valuable trade secrets of ALi, and you shall use all
+#  reasonable efforts to protect the confidentiality thereof, and to use this
+#  information only in connection with your use of ALi integrated circuit
+#  products.
+#
+#  2.     TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED
+#  "AS IS" AND WITH ALL FAULTS AND BROADCOM MAKES NO PROMISES, REPRESENTATIONS
+#  OR WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH
+#  RESPECT TO THE SOFTWARE.  BROADCOM SPECIFICALLY DISCLAIMS ANY AND ALL
+#  IMPLIED WARRANTIES OF TITLE, MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR
+#  A PARTICULAR PURPOSE, LACK OF VIRUSES, ACCURACY OR COMPLETENESS, QUIET
+#  ENJOYMENT, QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION. YOU ASSUME
+#  THE ENTIRE RISK ARISING OUT OF USE OR PERFORMANCE OF THE SOFTWARE.
+#
+#  3.     TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL BROADCOM
+#  OR ITS LICENSORS BE LIABLE FOR (i) CONSEQUENTIAL, INCIDENTAL, SPECIAL,
+#  INDIRECT, OR EXEMPLARY DAMAGES WHATSOEVER ARISING OUT OF OR IN ANY WAY
+#  RELATING TO YOUR USE OF OR INABILITY TO USE THE SOFTWARE EVEN IF BROADCOM
+#  HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES; OR (ii) ANY AMOUNT IN
+#  EXCESS OF THE AMOUNT ACTUALLY PAID FOR THE SOFTWARE ITSELF OR U.S. $1,
+#  WHICHEVER IS GREATER. THESE LIMITATIONS SHALL APPLY NOTWITHSTANDING ANY
+#  FAILURE OF ESSENTIAL PURPOSE OF ANY LIMITED REMEDY.
+#
+#****************************************************************************
+
+mainmenu_name "ALi SDK Software Configuration"
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Chip configuration selection'
+
+mainmenu_option next_comment
+comment 'Chip platform selection'
+
+choice 'ALi chip platform' \
+	"M36	ALI_CHIPPF_M36     \
+	 S3921  ALI_CHIPPF_S3921" M36
+if [ "$ALI_CHIPPF_M36" = "y" ]; then
+	define_string ALI_CHIP_PLATFORM "M36"
+fi
+
+if [ "$ALI_CHIPPF_S3921" = "y" ]; then
+        define_string ALI_CHIP_PLATFORM "S3921"
+fi
+
+endmenu
+
+mainmenu_option next_comment
+comment 'Chip ID selection'
+
+choice 'ALi chip ID' \
+	"M3606	ALI_CHIPID_M3606	\
+	 M3701C_Series ALI_CHIPID_M3701C	\
+	 M3701E	ALI_CHIPID_M3701E	\
+	 M3701G ALI_CHIPID_M3701G       \
+	 S3921 ALI_CHIPID_S3921" M3606
+if [ "$ALI_CHIPID_M3606" = "y" ]; then
+    define_string ALI_CHIP_ID "M3606"
+fi
+if [ "$ALI_CHIPID_M3701C" = "y" ]; then
+    define_string ALI_CHIP_ID "M3701C"
+fi
+if [ "$ALI_CHIPID_M3701E" = "y" ]; then
+    define_string ALI_CHIP_ID "M3701E"
+fi
+if [ "$ALI_CHIPID_M3701G" = "y" ]; then
+    define_string ALI_CHIP_ID "M3701G"
+fi
+if [ "$ALI_CHIPID_S3921" = "y" ]; then
+    define_string ALI_CHIP_ID "S3921"
+fi
+
+choice 'Chip revised' \
+	"REV_0 ALI_IC_REV_0 \
+	 REV_1 ALI_IC_REV_1 \
+	 REV_2 ALI_IC_REV_2 \
+	 REV_3 ALI_IC_REV_3 \
+	 REV_4 ALI_IC_REV_4 \
+	 REV_5 ALI_IC_REV_5 \
+	 REV_6 ALI_IC_REV_6 \
+	 REV_7 ALI_IC_REV_7 \
+	 REV_8 ALI_IC_REV_8" REV_0
+if [ "$ALI_IC_REV_0" = "y" ]; then
+	define_string ALI_IC_REV "REV_0"
+fi
+if [ "$ALI_IC_REV_1" = "y" ]; then
+	define_string ALI_IC_REV "REV_1"
+fi
+if [ "$ALI_IC_REV_2" = "y" ]; then
+	define_string ALI_IC_REV "REV_2"
+fi
+if [ "$ALI_IC_REV_3" = "y" ]; then
+	define_string ALI_IC_REV "REV_3"
+fi
+if [ "$ALI_IC_REV_4" = "y" ]; then
+	define_string ALI_IC_REV "REV_4"
+fi
+if [ "$ALI_IC_REV_5" = "y" ]; then
+	define_string ALI_IC_REV "REV_5"
+fi
+if [ "$ALI_IC_REV_6" = "y" ]; then
+	define_string ALI_IC_REV "REV_6"
+fi
+if [ "$ALI_IC_REV_7" = "y" ]; then
+	define_string ALI_IC_REV "REV_7"
+fi
+if [ "$ALI_IC_REV_8" = "y" ]; then
+	define_string ALI_IC_REV "REV_8"
+fi
+
+endmenu
+
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Kernel version selection'
+
+choice 'Kernel Version'   \
+	"mti-2.6.35.9 LINUX_KERNEL_VER_MTI_2_6_35_9    \
+	 linux-linaro-3.4 LINUX_KERNEL_VER_LINARO_34"\
+	 mti-2.6.35.9
+
+if [ "$LINUX_KERNEL_VER_MTI_2_6_35_9" = "y" ]; then
+    define_string LINUX_KERNEL_VER "linux_mti_2_6_35_9"
+    define_string DEFKERNELCONFIG_FILE "defkernelconfig_mti_2_6_35_9"    
+fi
+
+if [ "$LINUX_KERNEL_VER_LINARO_34" = "y" ]; then
+    define_string LINUX_KERNEL_VER "linux-linaro-3.4-rc3"
+    define_string DEFKERNELCONFIG_FILE "defkernelconfig_linux-linaro-3.4-rc3"
+fi
+
+endmenu
+
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'ALi driver selection'
+
+bool "Enable Remote Rrocess Call function for dual CPUs project" DRIVER_ENABLE_RPC
+dep_bool "ALi Remote Process Call Driver" DRIVER_RPC_ALI $DRIVER_ENABLE_RPC
+dep_bool "ALi Remote Process Call Driver Next Generation" DRIVER_ALI_RPCNG $DRIVER_ENABLE_RPC
+#choice 'ALi RPC/RPCng driver select' \
+#	"ALI_RPC     DRIVER_RPC_ALI
+#	ALI_RPCng  DRIVER_ALI_RPCNG"  DRIVER_RPC_ALI 
+dep_bool "ALi RPC hld decv driver" DRIVER_RPC_HLD_DECV $DRIVER_ENABLE_RPC
+dep_bool "ALi RPC hld AV sync" DRIVER_RPC_HLD_AVSYNC $DRIVER_ENABLE_RPC
+dep_bool "ALi RPC hld dis driver" DRIVER_RPC_HLD_DIS $DRIVER_ENABLE_RPC
+dep_bool "ALi RPC hld deca driver" DRIVER_RPC_HLD_DECA $DRIVER_ENABLE_RPC
+dep_bool "ALi RPC hld snd driver" DRIVER_RPC_HLD_SND $DRIVER_ENABLE_RPC
+dep_bool "ALi RPC hld gma driver" DRIVER_RPC_HLD_GMA $DRIVER_ENABLE_RPC
+dep_bool "ALi RPC pe driver" DRIVER_RPC_PE $DRIVER_ENABLE_RPC
+dep_bool "ALi RPC sbm driver" DRIVER_RPC_SBM $DRIVER_ENABLE_RPC
+dep_bool "ALi RPC hld vbi driver" DRIVER_RPC_HLD_VBI $DRIVER_ENABLE_RPC
+dep_bool "ALi RPC hld sdec driver" DRIVER_RPC_HLD_SDEC $DRIVER_ENABLE_RPC
+dep_bool "ALi RPC image driver" DRIVER_RPC_IMAGE $DRIVER_ENABLE_RPC
+dep_bool "ALi Frame Buffer Driver" DRIVER_FB_ALI $DRIVER_RPC_HLD_DIS
+dep_bool "ALi PE Driver for Media Player library" DRIVER_PE_ALI $DRIVER_RPC_PE
+bool "ALi HDMI Driver" DRIVER_HDMI_ALI
+dep_bool "ALi HDMI Driver HDCP Enable" DRIVER_HDCP_ENABLE_ALI $DRIVER_HDMI_ALI
+dep_bool "ALi HDMI Driver CEC Enable" DRIVER_CEC_ENABLE_ALI $DRIVER_HDMI_ALI
+dep_bool "ALi HEC Driver Enable" DRIVER_ALI_HEC $DRIVER_HDMI_ALI
+bool "ALi Video Player Core" DRIVER_VIDEO_ALI
+dep_bool "ALi Audio Player Core" DRIVER_ALI_M36_AUDIO_RPC $DRIVER_ENABLE_RPC
+dep_bool "ALi AV sync Driver" DRIVER_ALI_AVSYNC_RPC $DRIVER_ENABLE_RPC
+dep_bool "ALi CI (Common Interface) Controller" DRIVER_ALI_M36_CIC
+dep_bool "ALI Smart Card Controller" DRIVER_ALI_M36_SMARTCARD
+dep_bool "ALi SDEC Driver" DRIVER_ALI_M36_SDEC_RPC $DRIVER_ENABLE_RPC
+dep_bool "ALi VBI Driver" DRIVER_ALI_M36_VBI_RPC $DRIVER_ENABLE_RPC
+dep_bool "ALi DMX Driver" DRIVER_DVB_ALI_M36_DMX $DRIVER_ENABLE_RPC
+dep_bool "ALi TSG Driver" DRIVER_DVB_ALI_M36_TSG
+dep_bool "ALi TSI Driver" DRIVER_DVB_ALI_M36_TSI
+dep_bool "ALi Bandwidth TEST Driver" DRIVER_DVB_ALI_M36_TEST
+dep_tristate "ALi QPSK NIM driver(DVB-S/S2)" DRIVER_ALI_QPSK
+bool "ALi QAM NIM driver(DVB-C)" DRIVER_ALI_QAM
+bool "ALi COFDM NIM driver(DVB-T/T2)" DRIVER_ALI_COFDM
+if [ "$DRIVER_ALI_QPSK" = "y" ]; then
+dep_tristate "AV2012 tuner driver" DRIVER_AV2012
+fi
+if [ "$DRIVER_ALI_QAM" = "y" ]; then
+dep_tristate "RT810 tuner driver" DRIVER_RT810
+dep_tristate "RT820C tuner driver" DRIVER_RT820C
+dep_tristate "TDA18250 tuner driver" DRIVER_TDA18250
+dep_tristate "TDA18250AB tuner driver" DRIVER_TDA18250AB
+dep_tristate "DCT70701 tuner driver" DRIVER_DCT70701
+dep_tristate "ALPSTDAE tuner driver" DRIVER_ALPSTDAE
+dep_tristate "MXL603 tuner driver" DRIVER_MXL603
+dep_tristate "MXL203 tuner driver" DRIVER_MXL203
+dep_tristate "TDCCG1X1F tuner driver" DRIVER_TDCCG1X1F
+fi
+
+
+bool "ALI_MMC/SD/SDIO card support" DRIVER_ALI_MMC
+bool "SoC Audio for ALi M3602/M3603" DRIVER_SND_SOC_ALI_PCM
+bool "Scart Driver support" DRIVER_ALI_SCART
+
+mainmenu_option next_comment
+comment 'Panel Driver Selection'
+dep_tristate "HW Panel Scan Panel Driver" DRIVER_INPUT_ALI_PAN
+dep_tristate "CH455(FD650) Panel Driver" DRIVER_INPUT_ALI_PAN_CH455
+bool "M3912 Led Driver" DRIVER_INPUT_ALI_M3912_LED
+endmenu
+
+choice 'ALi Input IR driver' \
+    "ALI_IR	DRIVER_INPUT_ALI_IR
+     ALI_LIRC_IR DRIVER_INPUT_IR_LIRC_ALI" ALI_IR
+bool "ALi Soc driver" DRIVER_ALI_SOC
+bool "ALi power management implementation" DRIVER_ALI_PM
+bool "ALi SBM Driver for CPU & SEE memory access" DRIVER_ALI_SBM
+bool "ALi STC Driver for system time clock" DRIVER_ALI_STC
+bool "ALi POK Driver for system power down protection " DRIVER_ALI_POK
+bool "ALi descrambler" DRIVER_ALI_DSC
+if [ "$DRIVER_ALI_DSC" = "y" ]; then
+bool "ALi support crypto nand" DRIVER_ALI_CRYPTO_NAND
+fi
+bool "ALi crypto engine" DRIVER_ALI_CE
+bool "ALi TRNG" DRIVER_ALI_TRNG
+bool "ALi PMU Driver" DRIVER_ALI_PMU
+
+mainmenu_option next_comment
+comment 'ALi OpenVG kernel driver configuration'
+dep_tristate "ALi OpenVG kernel driver" DRIVER_ALI_OPENVG $SUPPORT_OPENVG
+if [ "$DRIVER_ALI_OPENVG" = "y" -o "$DRIVER_ALI_OPENVG" = "m" ]; then
+bool "ALi OpenVG Using MMU" ALI_OVG_MMU_ON
+choice 'ALi OpenVG Memory Pool selection' \
+    "MEMORY_OS_STRATEGY ALI_OVG_MEM_OS
+     MEMORY_POOL_STRATEGY ALI_OVG_MEM_POOL
+     MEMORY_BUDDY_STRATEGY ALI_OVG_MEM_BUDDY" MEMORY_OS_STRATEGY
+fi
+if [ "$ALI_OVG_MEM_POOL" = "y" ]; then
+bool "ALi OpenVG Using BoardSetting" ALI_OVG_BOARDSETTING_ON
+fi
+
+endmenu
+
+bool "ALi BDMA Driver" DRIVER_ALI_BDMA
+bool "ALi UART IO Driver" DRIVER_ALI_UART_IO
+bool "ALi image driver" DRIVER_ALI_IMAGE
+bool "ALi Watch dog driver" DRIVER_ALI_WDT 
+ 
+# pvr quantums must be times of 12
+# 12M: about 252 quantums ((21*4)*3), real size is 47k * 252 = 11.56M
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Board configuration selection'
+
+string "Board type" ALI_BOARD_TYPE
+string "Board ID" ALI_BOARD_ID
+
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Toolchain selection'
+
+choice 'GCC tool Chain' \
+     "mips-linux-gnu-gcc-4.4.1 MIPS_LINUX_GNU_GCC_4_4_1 \
+      arm-linux-gnueabi-gcc-4.6.3 ARM_LINUX_GNUEABI_GCC_4_6_3" \
+      mips-linux-gnu-gcc-4.4.1
+
+choice 'Base Library' \
+    "LIBC	DEV_MIPS_LIBC
+     UCLIBC	DEV_MIPS_UCLIBC" LIBC
+
+bool 'Pthreads' DEV_MIPS_PTHREADS
+
+define_bool DEV_USE_LIBCREDUCTION y
+
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Root file system selection'
+
+choice 'Root file system'   \
+    "INITRD	DEV_ROOTFS_INITRD \
+     YAFFS2	DEV_ROOTFS_YAFFS2 \
+     CRAMFS_YAFFS2	DEV_ROOTFS_CRAMFS_YAFFS2 \
+     UBIFS DEV_ROOTFS_UBIFS \
+     SQUASHFS DEV_ROOTFS_SQUASHFS \
+     NFS	DEV_ROOTFS_NFS" INITRD
+
+if [ "$DEV_ROOTFS_INITRD" = "y" ]; then
+    define_string DEV_KERNEL_ROOTFS "initrd"
+fi
+if [ "$DEV_ROOTFS_YAFFS2" = "y" ]; then
+    define_string DEV_KERNEL_ROOTFS "yaffs2"
+fi
+if [ "$DEV_ROOTFS_CRAMFS_YAFFS2" = "y" ]; then
+    define_string DEV_KERNEL_ROOTFS "cramfs"    
+fi
+if [ "$DEV_ROOTFS_UBIFS" = "y" ]; then
+    define_string DEV_KERNEL_ROOTFS "ubifs"
+fi
+if [ "$DEV_ROOTFS_SQUASHFS" = "y" ]; then
+    define_string DEV_KERNEL_ROOTFS "squashfs"
+fi
+if [ "$DEV_ROOTFS_NFS" = "y" ]; then
+    define_string DEV_KERNEL_ROOTFS "nfs"
+    define_string ALI_ENET "y"
+fi
+
+
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Bootloader selection'
+
+choice 'Bootloader selection'   \
+	"ALIBOOT DEV_BOOTLOADER_ALIBOOT \
+     UBOOT	 DEV_BOOTLOADER_UBOOT" ALIBOOT
+
+if [ "$DEV_BOOTLOADER_ALIBOOT" = "y" ]; then
+    define_string DEV_FLASH_BOOTLOADER "aliboot"
+fi
+if [ "$DEV_BOOTLOADER_UBOOT" = "y" ]; then
+    define_string DEV_FLASH_BOOTLOADER "uboot"
+fi
+
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Flash boot selection'
+
+choice 'Flash boot selection'   \
+	"NOR_ONLY DEV_FLASHBOOT_NOR \
+     NAND_ONLY DEV_FLASHBOOT_NAND \
+     NAND_NO_MTDCMDPARTS DEV_FLASHBOOT_NAND_NO_MTDCMDPARTS \
+     NOR_PLUS_NAND DEV_FLASHBOOT_NOR_NAND" NOR_ONLY
+
+if [ "$DEV_FLASHBOOT_NOR" = "y" ]; then
+	define_string DEV_FLASHBOOT "NOR"
+fi
+if [ "$DEV_FLASHBOOT_NAND" = "y" ]; then
+	define_string DEV_FLASHBOOT "NAND"
+fi
+if [ "$DEV_FLASHBOOT_NAND_NO_MTDCMDPARTS" = "y" ]; then
+	define_string DEV_FLASHBOOT "NAND_NO_CMDPARTS"
+fi
+if [ "$DEV_FLASHBOOT_NOR_NAND" = "y" ]; then
+	define_string DEV_FLASHBOOT "NOR_NAND"
+fi
+
+if [ "$DEV_FLASHBOOT_NOR" = "y" -o "$DEV_FLASHBOOT_NOR_NAND" = "y" ]; then
+  choice 'ALi NOR Flash driver support' \
+    "SFLASH	DRIVER_ALI_SFLASH \
+     PFLASH	DRIVER_ALI_PFLASH" SFLASH
+fi
+
+if [ "$DEV_FLASHBOOT_NOR_NAND" = "y" -o "$DEV_FLASHBOOT_NAND" = "y" -o "$DEV_FLASHBOOT_NAND_NO_MTDCMDPARTS" = "y" ]; then
+  bool 'ALi NAND Flash driver support' DRIVER_ALI_NAND
+  bool 'ALI Flash Translation Layer support' DRIVER_ALI_FTL
+fi
+
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Kernel configuration selection'
+
+bool 'Generate kernel config automatically' MISC_AUTOGEN_KCONF
+dep_bool 'Enable kernel preemption' KERNEL_PREEMPT $MISC_AUTOGEN_KCONF
+dep_bool 'Enable kernel fastboot' KERNEL_FASTBOOT $MISC_AUTOGEN_KCONF
+dep_bool 'Enable kernel power management' KERNEL_POWER_MANAGEMENT $MISC_AUTOGEN_KCONF
+
+if [ "$KERNEL_POWER_MANAGEMENT" = "y" ]; then
+	define_bool DRIVER_ALI_PM y
+fi
+
+dep_bool 'Enable pagecache size limit' KERNEL_PAGECACHE_LIMIT $MISC_AUTOGEN_KCONF
+
+if [ "$DEV_ROOTFS_YAFFS2" = "y" -o "$DEV_ROOTFS_CRAMFS_YAFFS2" = "y" ]; then
+	define_bool KERNEL_YAFFS y
+else
+	dep_bool 'Enable kernel yaffs2' KERNEL_YAFFS $MISC_AUTOGEN_KCONF
+fi
+
+if [ "$DEV_ROOTFS_UBIFS" = "y" ]; then
+	define_bool KERNEL_UBIFS y
+else
+	dep_bool 'Enable kernel ubifs' KERNEL_UBIFS $MISC_AUTOGEN_KCONF
+fi
+
+if [ "$DEV_ROOTFS_SQUASHFS" = "y" ]; then
+	define_bool KERNEL_SQUASHFS y
+else
+	dep_bool 'Enable kernel squashfs' KERNEL_SQUASHFS $MISC_AUTOGEN_KCONF
+fi
+
+if [ "$DEV_ROOTFS_NFS" = "y" ]; then
+	define_bool KERNEL_NFS y
+else
+	dep_bool 'Enable kernel NFS' KERNEL_NFS $MISC_AUTOGEN_KCONF
+fi
+
+dep_bool 'Enable kernel EXT2' KERNEL_EXT2 $MISC_AUTOGEN_KCONF
+dep_bool 'Enable kernel EXT3' KERNEL_EXT3 $MISC_AUTOGEN_KCONF
+dep_bool 'Enable kernel JFFS2' KERNEL_JFFS2 $MISC_AUTOGEN_KCONF
+dep_bool 'Enable kernel CRAMFS' KERNEL_CRAMFS $MISC_AUTOGEN_KCONF
+dep_bool 'Enable see in kernel' SEE_IN_KERNEL $MISC_AUTOGEN_KCONF
+dep_bool 'Enable NLS_ISO8859_1' KERNEL_NLS_ISO8859_1 $MISC_AUTOGEN_KCONF
+dep_bool 'Enable USB_LIBUSUAL' KERNEL_USB_LIBUSUAL $MISC_AUTOGEN_KCONF
+dep_bool 'Enable loader build' LOADER_BUILD $MISC_AUTOGEN_KCONF
+endmenu
+
+
+
+###################################################################################
+
+mainmenu_option next_comment
+comment 'USB selection'
+
+bool 'Support usb feature' SUPPORT_USB
+if [ "$ALI_CHIPID_M3701G" != "y" ]; then
+  dep_tristate "ALi USB HCD driver" DRIVER_USB_ALI_HCD $SUPPORT_USB
+fi
+dep_bool 'Support usb storage' SUPPORT_USB_STORAGE $SUPPORT_USB
+dep_bool "Support usb mouse" DRIVER_USB_MOUSE
+dep_bool "Support usb keyboard" DRIVER_USB_KEYBOARD
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Networking selection'
+
+bool 'Support networking feature' SUPPORT_NETWORKING
+
+dep_tristate "ALi Ethernet support" ALI_ENET $SUPPORT_NETWORKING
+if [ "$ALI_ENET" = "y" -o "$ALI_ENET" = "m" ]; then
+choice 'ALi Ethernet support' \
+	 "ALI_TOE2	DRIVER_ALI_TOE2 \
+	 ALI_SWITCH DRIVER_ALI_SWITCH \
+	 ALI_SWITCH_UTILITY DRIVER_ALI_SWITCH_UTILITY" ALI_TOE2
+fi
+
+dep_bool 'ali toe2 Support 128M' DRIVER_ALI_TOE2_128M $DRIVER_ALI_TOE2
+
+dep_bool 'SUPPORT USB wireless feature' SUPPORT_USB_WIRELESS $SUPPORT_NETWORKING  $SUPPORT_USB
+dep_bool 'RALINK 5370'       SUPPORT_RALINK_5370   $SUPPORT_USB_WIRELESS
+dep_bool 'REALTEK 8188'      SUPPORT_REALTEK_8188  $SUPPORT_USB_WIRELESS
+
+dep_bool 'SUPPORT PPP(point-to-point protocol)' SUPPORT_PPP $SUPPORT_NETWORKING
+
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'SDK features selection'
+
+dep_bool 'Support PVR feature' SUPPORT_PVR $BUILD_APP_GLASSHD
+dep_bool 'Support Media Player feature' SUPPORT_MEDIAPLAYER $BUILD_APP_GLASSHD
+bool 'Support OpenVG feature' SUPPORT_OPENVG
+bool 'Support iPad Share feature' SUPPORT_IPAD_SHARE
+bool 'support databroadcast' SUPPORT_DATABROADCAST
+
+if [ "$SUPPORT_DATABROADCAST" = "y" ]; then
+choice 'Choice databroadcast type' \
+	"TYPE_IPANEL	SUPPORT_DATABROADCAST_IPANEL" TYPE_IPANEL
+fi
+
+choice 'Choice CA type' \
+	"TYPE_CDCA SUPPORT_CAS_CDCA \
+	 TYPE_CDCA3 SUPPORT_CAS_CDCA3 \
+	 TYPE_CONAX	SUPPORT_CAS_CONAX \
+	 TYPE_DVN SUPPORT_CAS_DVN \
+	 TYPE_DVT SUPPORT_CAS_DVT \
+	 TYPE_CRYPTON SUPPORT_CAS_CRYPTON \
+	 TYPE_NONE SUPPORT_CAS_NONE \
+	 " TYPE_DVT
+	 
+bool 'Support AD feature' SUPPORT_AD
+bool 'Disable App printf' DRIVER_ALI_DISABLE_PRINTF
+
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Library selection'
+
+bool 'Build linuxstb library' BUILD_LIB_LINUXSTB
+dep_bool 'Build PVR plus library' BUILD_LIB_PVRPLUS $BUILD_LIB_LINUXSTB
+bool 'Build zlib library' BUILD_LIB_ZLIB
+dep_bool 'Build libpng library' BUILD_LIB_LIBPNG $BUILD_LIB_ZLIB
+bool 'Build jpeg library' BUILD_LIB_JPEG
+bool 'Build freetype library' BUILD_LIB_FREETYPE
+bool 'Build curl library' BUILD_LIB_CURL
+bool 'Build directfb library' BUILD_LIB_DIRECTFB
+bool 'Build qt library' BUILD_LIB_QT
+dep_bool 'Build qt-webkit library' BUILD_LIB_QTWEBKIT $BUILD_LIB_QT
+bool 'Build libxml2 library' BUILD_LIB_LIBXML2
+bool 'Build libtinyxml library' BUILD_LIB_TINYXML
+bool 'Build ali dmx library' BUILD_LIB_ALIDMX
+bool 'Build openmax and ffmpeg library' BUILD_LIB_OPENMAX_FFMPEG
+bool 'Build ali BDMA library' BUILD_LIB_ALIBDMA
+bool 'Build freeimage library' BUILD_LIB_FREEIMAGE
+bool 'Build directfb-examples' BUILD_DIRECTFB_EXAMPLES
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Application selection'
+
+bool 'Support to compile application with dynamic base libraries'  SUPPORT_DYNAMIC_LIBS
+bool 'Build busybox application' BUILD_APP_BUSYBOX
+bool 'Build httpd applications' BUILD_APP_HTTPD $BUILD_APP_BUSYBOX
+bool 'Build telnetd applications' BUILD_APP_TELNETD $BUILD_APP_BUSYBOX
+bool 'Build CLI application' BUILD_APP_CLI
+bool 'Build DBG application' BUILD_APP_DBG
+dep_bool 'Build ntfs-3g application' BUILD_APP_NTFS_3G $SUPPORT_USB_STORAGE
+dep_bool 'Build file sytem utils' BUILD_APP_FS_UTILS $SUPPORT_USB_STORAGE
+dep_bool 'Build browser applications' BUILD_APP_BROWSER $BUILD_LIB_QT
+dep_bool 'Build weather applications' BUILD_APP_WEATHER $BUILD_LIB_QT
+dep_bool 'Support OTT Application'    BUILD_APP_OTT    $BUILD_LIB_QT
+
+choice 'choose stb application' \
+	"dvbs	BUILD_APP_TYPE_DVBS \
+	 isdbt	BUILD_APP_TYPE_ISDBT \
+	 dvbc	BUILD_APP_TYPE_DVBC \
+	 mpsort	BUILD_APP_TYPE_MPSORT \
+	 test	BUILD_APP_TYPE_TEST" dvbc
+
+if [ "$BUILD_APP_TYPE_DVBS" = "y" ]; then
+choice 'dvbs application selection' \
+	"glass_hd	BUILD_APP_GLASSHD" glass_hd
+fi
+
+if [ "$BUILD_APP_TYPE_ISDBT" = "y" ]; then
+choice 'isdbt application selection' \
+	"glass_hd_16bit	BUILD_APP_GLASSHD_16BIT" glass_hd_16bit
+fi
+
+if [ "$BUILD_APP_TYPE_DVBC" = "y" ]; then
+choice 'dvbc application selection' \
+	"agate_demo_oui	BUILD_APP_AGATE_DEMO_OUI \
+	 agate_demo_aui	BUILD_APP_AGATE_DEMO_AUI \
+	 agate_demo_loader BUILD_APP_AGATE_DEMO_LOADER \
+	 m3701c_ipanel	BUILD_APP_M3701C_IPANEL \
+	 m3701c_ipanel3_new	BUILD_APP_M3701C_IPANEL3_NEW \
+	 m3701c_ipanel3_new_loader BUILD_APP_M3701C_IPANEL3_NEW_LOADER \
+	 m3701c_ipanel_advanced	BUILD_APP_M3701C_IPANEL_ADV \
+	 m3701c_newland	BUILD_APP_M3701C_NEWLAND \
+	 m3701c_newland_loader BUILD_APP_M3701C_NEWLAND_LOADER \
+	 s3701c_wasu	BUILD_APP_S3701C_WASU \
+	 m3701c_um_sdk BUILD_APP_M3701C_UM_SDK \
+	 m3701c_um_sdk_loader BUILD_APP_M3701C_UM_SDK_LOADER \
+	 m3701c_coship_loader BUILD_APP_M3701C_COSHIP_LOADER \
+	 m3701c_coship_udi BUILD_APP_M3701C_COSHIP_UDI \
+	 m3701c_starcor BUILD_APP_M3701C_STARCOR" agate_demo_oui
+fi
+
+if [ "$BUILD_APP_M3701C_IPANEL_ADV" = "y" ]; then
+bool '  build app for test'	BUILD_APP_MODE_TEST
+fi
+
+if [ "$BUILD_APP_M3701C_COSHIP_LOADER" = "y" ]; then
+bool ' build app for test'     BUILD_APP_MODE_TEST
+fi
+
+if [ "$BUILD_APP_TYPE_MPSORT" = "y" ]; then
+choice 'mpsort application selection' \
+	"s3701c_ic_sorting	BUILD_APP_S3701C_IC_SORTING" s3701c_ic_sorting
+fi
+
+if [ "$BUILD_APP_TYPE_TEST" = "y" ]; then
+choice 'test application selection' \
+	"driver_self_test	BUILD_APP_TEST_DRIVER" driver_self_test
+fi
+
+endmenu
+
+
+
+###################################################################################
+mainmenu_option next_comment
+comment 'Debug selection'
+
+bool 'Enable kernel debug info' KERNEL_DEBUG_INFO
+bool 'Enable KALLSYMS in kernel' KERNEL_KALLSYMS
+bool 'Support GDBServer for application' DEV_SUPPORT_GDBSERVER
+bool 'Support advanced top tool for application' DEV_SUPPORT_ADVTOP
+bool 'Support register access tool' DEV_SUPPORT_REGACC 
+
+endmenu
+

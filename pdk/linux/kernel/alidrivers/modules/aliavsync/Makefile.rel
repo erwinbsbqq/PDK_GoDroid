@@ -1,0 +1,6 @@
+#
+# Makefile for the ali avsync driver
+#
+
+obj-$(CONFIG_ALI_AVSYNC_RPC)          += aliavsync.o
+#aliavsync-y := ali_avsync_rpc.o

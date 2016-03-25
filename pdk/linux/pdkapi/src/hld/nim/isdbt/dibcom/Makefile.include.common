@@ -1,0 +1,4 @@
+DIBCOM_SAMPLE_OBJECTS += monitor/monitor_dib7000.o interface/host.o bus/spp_i2c/spp_host.o platform/platform_linux.o sample_spp.o interface/linux_spp.o
+
+HAVE_COMMON = 1
+
